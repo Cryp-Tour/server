@@ -17,6 +17,13 @@
   },
   "homepage": "https://github.com/cryp-tour/server#readme",
   "dependencies": {
-    "express": "^4.17.3"
+    "body-parser": "^1.13.3",
+    "express": "^4.13.3",
+    "express-basic-auth": "^1.2.0",
+    "node-fetch": "^2.6.1"
+  },
+  "engines": {
+    "node": "^10.0.0",
+    "npm": "^7.0.0"
   }
 }
