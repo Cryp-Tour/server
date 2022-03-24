@@ -1,0 +1,22 @@
+{
+  "name": "cryptour-backend",
+  "version": "1.0.0",
+  "description": "Cryptour Touren Portal Backend",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cryp-tour/server.git"
+  },
+  "author": "ITA20",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/cryp-tour/server/issues"
+  },
+  "homepage": "https://github.com/cryp-tour/server#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
