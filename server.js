@@ -24,16 +24,5 @@ var server = app.listen(3030, function() {
   });
 
 
-app.get('/api', (req, res) => {
-    res.status(200);
-    res.json({
-        message: "Hello World!", 
-        Connection: "Success!"
-    });
-  });
-
-app.head('/', (req, res) => {
-    res.status(200);
-    res.header({testHeader: "testValue"});
-    res.end("");
-});
+var routes = require('./API/routes/testRoutes'); //importing routes
+routes(app); //register the route
