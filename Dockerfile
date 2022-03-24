@@ -2,5 +2,5 @@ FROM node:16-alpine
 COPY package*.json ./
 RUN npm install
 COPY . .
-EXPOSE 8080
+EXPOSE 3030
 CMD [ "node", "server.js" ]
