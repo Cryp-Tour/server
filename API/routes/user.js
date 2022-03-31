@@ -51,7 +51,8 @@ router.patch('/', async (req, res, next) => {
   }
 });
 
-module.exports = router;
+/**
+ * connect an Ethereum wallet to the user
  */
 router.post('/connectWallet', async (req, res, next) => {
   const options = {

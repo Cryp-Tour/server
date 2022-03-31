@@ -1,4 +1,4 @@
-const ServerError = require('../../lib/error');
+const ServerError = require('../lib/error');
 /**
  * @param {Object} options
  * @param {String} options.searchQuery Search by title of the tour

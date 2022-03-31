@@ -1,4 +1,4 @@
-const ServerError = require('../../lib/error');
+const ServerError = require('../lib/error');
 /**
  * @param {Object} options
  * @throws {Error}
