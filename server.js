@@ -3,6 +3,7 @@ var express = require('express');        // critical module for building a Web S
 var bodyParser = require('body-parser'); // helper routines to parse data as JSON in request body
 var fetch = require('node-fetch');       // http Server requests similar to the Client Version
 var basicAuth = require('express-basic-auth'); // Some basic HTTP Header Authorization
+var DBO = require('./db/dbo'); //module for db requests and db creation
 //----------------------------------------------------------------------------
 // create a new express based Web Server
 // ---------------------------------------------------------------------------
