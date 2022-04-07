@@ -1,18 +1,15 @@
-var express = require('express');        // critical module for building a Web Server App
-// Here are some basic packages we need together with express
-var bodyParser = require('body-parser'); // helper routines to parse data as JSON in request body
-var fetch = require('node-fetch');       // http Server requests similar to the Client Version
-var basicAuth = require('express-basic-auth'); // Some basic HTTP Header Authorization
-//----------------------------------------------------------------------------
-// create a new express based Web Server
-// ---------------------------------------------------------------------------
+var express = require('express');
+var bodyParser = require('body-parser');
+var fetch = require('node-fetch');
+var basicAuth = require('express-basic-auth');
+var morgan = require('morgan')
+
 var app = express();
-// app.set('view engine', 'ejs');
-// app.set('views', __dirname + '/views');
-// app.use('/static', express.static('/views/HTML'))
-app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+// log every request in format:
+// :remote-addr :remote-user :method :url HTTP/:http-version :status :res[content-length] - :response-time ms
+app.use(morgan('short'))
 
 // -----------------------------------------------------------------------------
 // the WebServer now listens to http://localhost:3030 / http gets and posts
@@ -23,6 +20,17 @@ var server = app.listen(3030, function() {
     console.log('***********************************');
   });
 
+/*
+ * Routes
+ */
+app.use('/tours', require('./API/routes/tours'));
+app.use('/user', require('./API/routes/user'));
+// demo routes
+var routes = require('./API/routes/testRoutes');
+routes(app);
 
-var routes = require('./API/routes/testRoutes'); //importing routes
-routes(app); //register the route
+// catch 404
+app.use((req, res, next) => {
+  console.log(`Error 404 on ${req.url}.`);
+  res.status(404).send({ status: 404, error: 'Not found' });
+});

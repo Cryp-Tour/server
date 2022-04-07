@@ -20,6 +20,7 @@
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
     "express-basic-auth": "^1.2.0",
+    "morgan": "^1.10.0",
     "node-fetch": "^2.6.1"
   },
   "engines": {
