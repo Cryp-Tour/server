@@ -1,0 +1,46 @@
+version: '3.3'
+
+services:
+    traefik:
+        image: traefik
+        ports:
+            - '80:80'
+            - '443:443'
+        container_name: traefik
+        volumes:
+            - '/home/gh-deploy/traefik:/etc/traefik'
+            - '/var/run/docker.sock:/var/run/docker.sock:ro'
+        environment:
+            "CF_API_EMAIL": ${CF_API_EMAIL}
+            "CF_DNS_API_TOKEN": ${CF_DNS_API_TOKEN}
+        labels:
+            traefik.enable: true
+            traefik.http.routers.api.rule: "Host(`traefik.cryptour.dullmer.de`)"
+            traefik.http.routers.api.service: "api@internal"
+            traefik.http.routers.api.middlewares: "auth"
+
+    backend:
+        image: ghcr.io/cryp-tour/server
+        ports:
+            - '3030:3030'
+        volumes:
+            - '/home/gh-deploy/cryptour-backend:/data:ro'
+            - '/home/gh-deploy/cryptour-backend/db:/db'
+        labels:
+            traefik.enable: true
+            traefik.http.routers.backend.rule: "Host(`backend.cryptour.dullmer.de`)"
+
+    # frontend:
+    #     image: nginxdemos/hello
+    #     ports:
+    #         - '9118:9118'
+    #     labels:
+    #         traefik.enable: true
+    #         traefik.http.routers.frontend.rule: "Host(`cryptour.dullmer.de`)"
+
+    hello:
+        image: nginxdemos/hello
+        container_name: hello
+        labels:
+            traefik.enable: true
+            traefik.http.routers.hello.rule: "Host(`hello.cryptour.dullmer.de`)"
