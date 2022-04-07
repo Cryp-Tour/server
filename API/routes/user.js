@@ -40,7 +40,8 @@ router.post('/', async (req, res, next) => {
  */
 router.patch('/', async (req, res, next) => {
   const options = {
-    body: req.body
+    body: req.body,
+    username: atob(req.headers.authorization.split("Basic ")[1]).split(":")[0]
   };
 
   try {
