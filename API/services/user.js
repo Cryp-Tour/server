@@ -36,24 +36,36 @@ module.exports.getUser = async (options) => {
  * @return {Promise}
  */
 module.exports.createUser = async (options) => {
-  await dao
+  return await dao
     .run(
-      `INSERT INTO user(firstName,surName,pwdHash,eMail,userName) VALUES(?,?,?,?,?)`,
+      `INSERT INTO user(firstName,surName,pwdHash,eMail,userName,walletID) VALUES(?,?,?,?,?,?)`,
       [
         options.body.firstname,
         options.body.surname,
         options.body.password,
         options.body.email,
         options.body.username,
+        options.body['wallet-id']
       ]
     )
     .then((value) => {
       console.log("Creating user with username " + options.body.username);
+      return {
+        status: 201,
+        data: {
+          "id": value.id,
+          "firstname": options.body.firstname,
+          "surname": options.body.surname,
+          "username": options.body.username,
+          "email": options.body.email,
+          "wallet-id": options.body['wallet-id']
+        }
+      };
+    }, (err) =>{
+      return {
+        status: 401,
+      };
     });
-
-  return {
-    status: 201,
-  };
 };
 
 /**
