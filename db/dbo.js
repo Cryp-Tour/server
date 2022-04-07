@@ -61,8 +61,7 @@ class DBO {
         duration REAL,
         distance REAL,
         difficulty INTEGER,
-        locationLat REAL,
-        locationLon REAL,
+        location VARCHAR(255),
         creatorID INTEGER NOT NULL,
         FOREIGN KEY(creatorID) REFERENCES user(uID)
         )`;
