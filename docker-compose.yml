@@ -25,7 +25,7 @@ services:
             - '3030:3030'
         volumes:
             - '/home/gh-deploy/cryptour-backend:/data:ro'
-            - '/home/gh-deploy/cryptour-backend/db:/db'
+            - '/home/gh-deploy/cryptour-backend/db:/db/db'
         labels:
             traefik.enable: true
             traefik.http.routers.backend.rule: "Host(`backend.cryptour.dullmer.de`)"
