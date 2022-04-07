@@ -1,4 +1,6 @@
 const ServerError = require('../lib/error');
+var DBO = require('../../db/dbo'); //module for db requests and db creation
+const dao = new DBO('./db/db/web.sqlite');
 /**
  * @param {Object} options
  * @param {String} options.searchQuery Search by title of the tour
@@ -30,7 +32,9 @@ module.exports.listTours = async (options) => {
 
   return {
     status: 200,
-    data: 'listTours ok!'
+    data: {
+      
+    }
   };
 };
 
@@ -57,8 +61,26 @@ module.exports.createTour = async (options) => {
   //   error: 'Server Error' // Or another error message.
   // });
 
+  await dao
+    .run(
+      `INSERT INTO tour(title,difficulty,distance,duration,description,location,creatorID) VALUES(?,?,?,?,?,?,?)`,
+      [
+        options.body.title,
+        options.body.difficulty,
+        options.body.distance,
+        options.body.duration,
+        options.body.description,
+        options.body.location,
+        options.body.creatorID,
+      ]
+    ).then(
+      function(){
+        console.log("Creating tour with title: " + options.body.title);
+      });
+
+
   return {
-    status: 200,
+    status: 201,
     data: 'createTour ok!'
   };
 };

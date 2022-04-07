@@ -462,23 +462,15 @@ components:
           type: string
     Tour:
       required:
-        - id
         - title
-        - difficulty
-        - start-location
-        - distance 
-        - duration
-        - description
+        - creatorID
       properties:
-        id:
-          type: integer
-          format: int64
         title:
           type: string
         difficulty:
           type: integer
           format: int32
-        start-location:
+        location:
           type: string
         distance:
           type: number
@@ -486,6 +478,8 @@ components:
           type: number
         description:
           type: string
+        creatorID:
+          type: number
     Tours:
       type: array
       items:
