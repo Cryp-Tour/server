@@ -4,6 +4,24 @@ var bodyParser = require('body-parser'); // helper routines to parse data as JSO
 var fetch = require('node-fetch');       // http Server requests similar to the Client Version
 var basicAuth = require('express-basic-auth'); // Some basic HTTP Header Authorization
 var DBO = require('./db/dbo'); //module for db requests and db creation
+
+//----------------------------------------------------------------------------
+// connect to db
+//----------------------------------------------------------------------------
+const dao = new DBO('./db/db/web.sqlite');
+/* example run and get
+dao.run(
+  `INSERT INTO user(firstName,surName,pwdHash,eMail,userName) VALUES(?,?,?,?,?)`,
+  ['test','test','test','test','test']
+).then(function(value){
+  return dao.get('SELECT * from user');
+}).then(
+  function(value) {
+    console.log(value);
+  }
+);
+*/
+
 //----------------------------------------------------------------------------
 // create a new express based Web Server
 // ---------------------------------------------------------------------------
