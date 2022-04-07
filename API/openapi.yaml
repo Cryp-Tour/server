@@ -1,0 +1,529 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Cryptour API
+  license:
+    name: SWE 2022
+    
+servers:
+  - url: https://backend.cryptour.dullmer.de/api
+tags:
+  - name: Tours
+    description: >-
+      Tours are the core Dataset of the API. They describe a planned 
+      hiking route and can be created, sold and bought through the planned
+      crypto implementation 
+  - name: Users
+    description: >-
+      A user can be a provider or consumer of a tour. 
+paths:
+  /tours:
+    get:
+      summary: List all tours
+      operationId: listTours
+      tags:
+        - Tours
+      parameters:
+        - name: searchQuery
+          in: query
+          description: Search by title of the tour
+          required: false
+          schema:
+            type: string
+        - name: minDifficulty
+          in: query
+          description: Search by minimum tour difficulty
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: maxDifficulty
+          in: query
+          description: Search by maximum tour difficulty
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: minLength
+          in: query
+          description: Search by minimum tour length
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: maxLength
+          in: query
+          description: Search by maximum tour length
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: location
+          in: query
+          description: Search by tour location
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: An array of tours
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tours"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a tour
+      operationId: createTour
+      tags:
+        - Tours
+      security:
+        - basicAuth: []
+      requestBody:
+        description: A description of a Tour
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/Tour"
+      responses:
+        201:
+          description: Tour successfully created
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /tours/{TID}:
+    get:
+      summary: Get a specific tour
+      operationId: getTour
+      tags:
+        - Tours
+      parameters:
+        - name: TID
+          in: path
+          required: true
+          description: The ID of the tour to retrieve
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Tour found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tour"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Delete a specific tour
+      operationId: deleteTour
+      tags:
+        - Tours
+      security:
+        - basicAuth: []
+      parameters:
+        - name: TID
+          in: path
+          required: true
+          description: The ID of the tour to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        204:
+          description: Tour deleted
+        403:
+          description: Tour already bought by someone. Unable to delete.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /tours/{TID}/image:
+    post:
+      summary: Upload an image file
+      operationId: uploadImage
+      tags:
+        - Tours
+      security:
+        - basicAuth: []
+      parameters:
+        - name: TID
+          in: path
+          required: true
+          description: The ID of the tour to delete
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: The Image file
+        required: true
+        content:
+          image/jpeg:
+            schema:
+                type: string
+                format: binary
+      responses:
+        201:
+          description: Image successfully uploaded
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      summary: Get a tour image
+      operationId: getTourImage
+      tags:
+        - Tours
+      security:
+        - basicAuth: []
+      parameters:
+        - name: TID
+          in: path
+          required: true
+          description: The ID of the tour to retrieve
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Tour Image returned
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /tours/{TID}/gpx:
+    get:
+      summary: Get a tour gpx file
+      operationId: getTourGPX
+      tags:
+        - Tours
+      security:
+        - basicAuth: []
+      parameters:
+        - name: TID
+          in: path
+          required: true
+          description: The ID of the tour to retrieve
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Tour GPX returned
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        403:
+          description: Tour not bought by current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Upload a gpx file
+      operationId: uploadGPX
+      tags:
+        - Tours
+      security:
+        - basicAuth: []
+      parameters:
+        - name: TID
+          in: path
+          required: true
+          description: The ID of the tour to delete
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: The GPX file
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+                type: string
+                format: binary
+      responses:
+        201:
+          description: GPX successfully uploaded
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tours/{TID}/rating:
+    post:
+      summary: Rate a tour
+      operationId: rateTour
+      security:
+        - basicAuth: []
+      parameters:
+        - name: TID
+          in: path
+          required: true
+          description: The ID of the tour to retrieve
+          schema:
+            type: integer
+            format: int64
+      tags:
+        - Tours
+      responses:
+        201:
+          description: Tour successfully rated
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      summary: Get a tour rating
+      operationId: getTourRating
+      tags:
+        - Tours
+      parameters:
+        - name: TID
+          in: path
+          required: true
+          description: The ID of the tour to retrieve
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Tour Rating returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rating"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /user:
+    get:
+      summary: Get info about myself
+      operationId: getUser
+      tags:
+        - Users
+      security:
+        - basicAuth: []
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+    post:
+      summary: create a new User
+      operationId: createUser
+      tags:
+        - Users
+      requestBody:
+        description: The user information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegister"
+      responses:
+        201:
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+    patch:
+      summary: edit the information of an existing user
+      operationId: patchUser
+      tags:
+        - Users
+      requestBody:
+        description: The user information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegister"
+      responses:
+        201:
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /user/connectWallet:
+    post:
+      summary: create a new User
+      operationId: connectWallet
+      tags:
+        - Users
+      requestBody:
+        description: The user wallet id on the Ethereum chain
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        201:
+          description: Wallet successfully connected
+        401:
+          $ref: "#/components/responses/UnauthorizedError"   
+      
+components:
+  schemas:
+    User:
+      required:
+        - firstname
+        - surname
+        - email
+        - username
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstname:
+          type: string
+        surname:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        wallet-id:
+          type: string
+    UserRegister:
+      required:
+        - firstname
+        - surname
+        - email
+        - username
+        - password
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstname:
+          type: string
+        surname:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+          format: email
+        wallet-id:
+          type: string
+    Tour:
+      required:
+        - id
+        - title
+        - difficulty
+        - start-location
+        - distance 
+        - duration
+        - description
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        difficulty:
+          type: integer
+          format: int32
+        start-location:
+          type: string
+        distance:
+          type: number
+        duration:
+          type: number
+        description:
+          type: string
+    Tours:
+      type: array
+      items:
+        $ref: "#/components/schemas/Tour"
+    Rating:
+      required:
+        - rid
+        - rating
+        - description
+        - timestamp
+      properties:
+        rid:
+          type: integer
+        rating:
+          type: integer
+        description:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+  responses:
+    UnauthorizedError:
+      description: Authentication information is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
