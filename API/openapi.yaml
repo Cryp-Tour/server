@@ -6,7 +6,8 @@ info:
     name: SWE 2022
     
 servers:
-  - url: https://backend.cryptour.dullmer.de/api
+  - url: https://backend.cryptour.dullmer.de/
+  - url: http://localhost:3030
 tags:
   - name: Tours
     description: >-

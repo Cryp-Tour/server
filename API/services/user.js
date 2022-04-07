@@ -1,4 +1,6 @@
-const ServerError = require('../lib/error');
+const ServerError = require("../lib/error");
+var DBO = require("../../db/dbo");
+const dao = new DBO("./db/db/web.sqlite");
 /**
  * @param {Object} options
  * @throws {Error}
@@ -24,7 +26,7 @@ module.exports.getUser = async (options) => {
 
   return {
     status: 200,
-    data: 'getUser ok!'
+    data: "getUser ok!",
   };
 };
 
@@ -34,26 +36,24 @@ module.exports.getUser = async (options) => {
  * @return {Promise}
  */
 module.exports.createUser = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
+  await dao
+    .run(
+      `INSERT INTO user(firstName,surName,pwdHash,eMail,userName) VALUES(?,?,?,?,?)`,
+      [
+        options.body.firstname,
+        options.body.surname,
+        options.body.password,
+        options.body.email,
+        options.body.username,
+      ]
+    )
+    .then(
+      (value) => {
+        console.log("Creating user with username " + options.body.username);
+      });
 
   return {
-    status: 200,
-    data: 'createUser ok!'
+    status: 201,
   };
 };
 
@@ -82,7 +82,7 @@ module.exports.patchUser = async (options) => {
 
   return {
     status: 200,
-    data: 'patchUser ok!'
+    data: "patchUser ok!",
   };
 };
 
@@ -111,7 +111,6 @@ module.exports.connectWallet = async (options) => {
 
   return {
     status: 200,
-    data: 'connectWallet ok!'
+    data: "connectWallet ok!",
   };
 };
-
