@@ -406,7 +406,7 @@ paths:
         content:
           application/json:
             schema:
-              type: string
+              $ref: "#/components/schemas/WalletConnect"
       responses:
         201:
           description: Wallet successfully connected
@@ -506,6 +506,10 @@ components:
         timestamp:
           type: string
           format: date-time
+    WalletConnect:
+      properties:
+        walletAddress:
+          type: string
     Error:
       required:
         - code
