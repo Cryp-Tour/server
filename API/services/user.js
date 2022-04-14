@@ -23,10 +23,10 @@ module.exports.getUser = async (options) => {
     data: {
       id: user.uID,
       firstName: user.firstName,
-      surname: user.surName,
-      username: user.userName,
-      email: user.eMail,
-      walletId: user.walletID
+      surName: user.surName,
+      userName: user.userName,
+      eMail: user.eMail,
+      walletID: user.walletID
     },
   };
 };

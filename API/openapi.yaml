@@ -434,7 +434,7 @@ components:
         email:
           type: string
           format: email
-        wallet-id:
+        walletID:
           type: string
     UserRegister:
       required:
