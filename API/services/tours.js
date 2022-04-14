@@ -1,4 +1,9 @@
+const { download } = require('express/lib/response');
 const ServerError = require('../lib/error');
+const FileResult = require('../lib/fileResult');
+const gpxManager = require("../../gpxManager");
+var DBO = require("../../db/dbo");
+const dao = new DBO("./db/db/web.sqlite");
 /**
  * @param {Object} options
  * @param {String} options.searchQuery Search by title of the tour
@@ -58,7 +63,7 @@ module.exports.createTour = async (options) => {
   // });
 
   return {
-    status: 200,
+    status: 201,
     data: 'createTour ok!'
   };
 };
@@ -70,26 +75,29 @@ module.exports.createTour = async (options) => {
  * @return {Promise}
  */
 module.exports.getTour = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
+  await dao.get(
+    `SELECT tID, title, difficulty, location, distance, duration, description, creatorID FROM tour WHERE tID = ?`, 
+    [options.TID]
+
+  )
+  .then(
+    (value) =>  {
+      tour = value["0"]
+      console.log("Getting information about tour " + tour.tID)
+    });
 
   return {
     status: 200,
-    data: 'getTour ok!'
+    data: {
+      id: tour.tID,
+      title: tour.title,
+      difficulty: tour.difficulty,
+      location: tour.location,
+      distance: tour.distance,
+      duration: tour.duration,
+      description: tour.description,
+      creatorID: tour.creatorID
+    }
   };
 };
 
@@ -189,28 +197,10 @@ module.exports.getTourImage = async (options) => {
  * @throws {Error}
  * @return {Promise}
  */
-module.exports.getTourGpx = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
+module.exports.getTourGpx = (options) => {
+  var filePath = gpxManager.getTourGpxPath(options.TID);
 
-  return {
-    status: 200,
-    data: 'getTourGpx ok!'
-  };
+  return new FileResult(filePath);
 };
 
 /**
