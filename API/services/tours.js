@@ -1,4 +1,4 @@
-const { download } = require('express/lib/response');
+const { download, get } = require('express/lib/response');
 const ServerError = require('../lib/error');
 
 const FileResult = require('../lib/fileResult');
@@ -186,47 +186,45 @@ module.exports.getTour = async (options) => {
  * @return {Promise}
  */
 module.exports.deleteTour = async (options) => {
-  // TODO Check if User owns tour
+  var uID = await userManager.getUserId(options.username);
 
-  return await dao.get(
-    `SELECT tourID FROM userTours WHERE tourID = ?`, [options.TID]
-  )
-  .then(
-    async (value) => {
-        tour = value["0"]
-        if (typeof tour === 'undefined') {
-          return await dao.run(
-            `DELETE FROM tour WHERE tID = ?`, [options.TID]
-          )
-          .then(
-            async (value) =>  {
-              console.log("Deleting tour with id " + options.TID)
-              return {
-                status: 204,
-              }
-            },
-            (err) => {
-              return {
-                status: 400
-              }
-            }
-          )  
-        } else {
-          console.log("Tour is already bought and therefore cannot be deleted.")
-          return {
-            status: 403,
-            data: {
-              Error: "Tour is already bought and therefore cannot be deleted."
-            }
-          }
-        }
-    },
-    (err) => {
-      return {
-        status: 400
-      }
+  // check if user owns tour
+  var getQuery = await dao.get(`SELECT creatorID from tour WHERE tID = ?`, [options.TID]);
+  // tour does not exists
+  if (getQuery.length == 0) {
+    return {
+      status: 404,
+      data: "Tour not found"
     }
+  }
+
+  // check if user owns tour
+  if (getQuery[0].creatorID != uID) {
+    return {
+      status: 401,
+      data: "User does not own tour"
+    }
+  }
+
+  // check if someone owns the tour
+  var tourOwners = await dao.get(`SELECT userID from userTours WHERE tourID = ?`, [options.TID]);
+  if (tourOwners.length > 0) {
+    console.log("Tour is already bought and therefore cannot be deleted.");
+    return {
+      status: 403,
+      data: "Tour is already bought and therefore cannot be deleted."
+    }
+  }
+
+  // DELETE tour
+  console.log("Deleting tour with id " + options.TID);
+  await dao.run(
+    `DELETE FROM tour WHERE tID = ?`, [options.TID]
   );
+
+  return {
+    status: 204
+  }
 };
 
 /**

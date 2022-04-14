@@ -34,7 +34,7 @@ router.get('/', async (req, res, next) => {
  * Create a tour
  */
 router.post('/', async (req, res, next) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  var username = await userManager.checkAuthorizationHeader(req.headers.authorization);
   if (!username){
     res.status(401).send("Invalid authorization!");
     return;
@@ -72,7 +72,7 @@ router.get('/:TID', async (req, res, next) => {
  * Delete a specific tour
  */
 router.delete('/:TID', async (req, res, next) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  var username = await userManager.checkAuthorizationHeader(req.headers.authorization);
   if (!username){
     res.status(401).send("Invalid authorization!");
     return;
@@ -95,7 +95,7 @@ router.delete('/:TID', async (req, res, next) => {
  * Upload an image file
  */
 router.post('/:TID/image', async (req, res, next) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  var username = await userManager.checkAuthorizationHeader(req.headers.authorization);
   if (!username){
     res.status(401).send("Invalid authorization!");
     return;
@@ -173,7 +173,7 @@ router.get('/:TID/gpx', async (req, res, next) => {
  * Upload a gpx file
  */
 router.post('/:TID/gpx', async (req, res, next) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  var username = awaituserManager.checkAuthorizationHeader(req.headers.authorization);
   if (!username){
     res.status(401).send("Invalid authorization!");
     return;
@@ -196,7 +196,7 @@ router.post('/:TID/gpx', async (req, res, next) => {
  * Rate a tour
  */
 router.post('/:TID/rating', async (req, res, next) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  var username = await userManager.checkAuthorizationHeader(req.headers.authorization);
   if (!username){
     res.status(401).send("Invalid authorization!");
     return;
