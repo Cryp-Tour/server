@@ -173,7 +173,7 @@ module.exports.getTour = async (options) => {
 
   return {
     status: 200,
-    data: returnData
+    data: returnData[0]
   };
 
 };
