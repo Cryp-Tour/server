@@ -12,13 +12,16 @@ router.get('/', async (req, res, next) => {
     searchQuery: req.query['searchQuery'],
     minDifficulty: req.query['minDifficulty'],
     maxDifficulty: req.query['maxDifficulty'],
-    minLength: req.query['minLength'],
-    maxLength: req.query['maxLength'],
+    minDistance: req.query['minDistance'],
+    maxDistance: req.query['maxDistance'],
+    minTime: req.query['minTime'],
+    maxTime: req.query['maxTime'],
     location: req.query['location']
   };
 
   try {
     const result = await tours.listTours(options);
+    res.header(result.header);
     res.status(result.status || 200).send(result.data);
   } catch (err) {
     next(err);

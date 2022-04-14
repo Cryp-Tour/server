@@ -1,10 +1,12 @@
 const { download } = require('express/lib/response');
 const ServerError = require('../lib/error');
+
 const FileResult = require('../lib/fileResult');
 const gpxManager = require("../../gpxManager");
 const imageManager = require("../../imageManager");
 var DBO = require("../../db/dbo");
 const dao = new DBO("./db/db/web.sqlite");
+
 /**
  * @param {Object} options
  * @param {String} options.searchQuery Search by title of the tour
@@ -17,26 +19,68 @@ const dao = new DBO("./db/db/web.sqlite");
  * @return {Promise}
  */
 module.exports.listTours = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
+	console.log("getting Tours");
+
+	var sqlQuery = "";
+	try{
+		if(JSON.stringify(options) != "{}"){
+			sqlQuery += "WHERE "
+			if(options.minDifficulty != undefined){
+				if(isNaN(options.minDifficulty)) throw "Expected number for minDifficulty";
+				sqlQuery += (" difficulty >= " + options.minDifficulty + " AND");
+			}
+			if(options.maxDifficulty != undefined){
+				if(isNaN(options.maxDifficulty)) throw "Expected number for maxDifficulty";
+				sqlQuery += (" difficulty <=  " + options.maxDifficulty + " AND");
+			}
+			if(options.minDistance != undefined){
+				if(isNaN(options.minDistance)) throw "Expected number for minDistance";
+				sqlQuery += (" distance >= " + options.minDistance + " AND");
+			}
+			if(options.maxDistance != undefined){
+				if(isNaN(options.maxDistance)) throw "Expected number for maxDistance";
+				sqlQuery += (" distance <=  " + options.maxDistance + " AND");
+			}
+			if(options.minDuration != undefined){
+				if(isNaN(options.minDuration)) throw "Expected number for minDuration";
+				sqlQuery += (" duration >= " + options.minDuration + " AND");
+			}
+			if(options.maxDuration != undefined){
+				if(isNaN(options.maxDuration)) throw "Expected number for maxDuration";
+				sqlQuery += (" duration <=  " + options.maxDuration + " AND");
+			}
+			if(options.location != undefined){
+				sqlQuery += (" location =  '" + options.location + "' AND");
+			}
+			sqlQuery = sqlQuery.substring(0, sqlQuery.length-3);
+		}
+	} catch (e){
+		console.log("Error: Expected number")
+		return{
+			status: 400,
+			data: {
+				Error: e
+			}
+		}
+	}
+
+
+  console.log(options)
+
+  
+  var returnData = [];
+  await dao
+  .get('SELECT * from tour ' + sqlQuery).then(function(value){
+			console.log(value);
+      returnData = value;
+    });
 
   return {
     status: 200,
-    data: 'listTours ok!'
+    data: returnData,
+    header: {
+      "NumberOfResults": returnData.length,
+    }
   };
 };
 
@@ -46,26 +90,47 @@ module.exports.listTours = async (options) => {
  * @return {Promise}
  */
 module.exports.createTour = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
-  
+
+	var expected = ['title', 'difficulty', 'location', 'distance', 'duration', 'description', 'creatorID'];
+	var keys = Object.keys(options.body);
+	try {
+		if(keys.length != expected.length) throw new Error;
+		for(var i=0; i < keys.length; i++){
+			if(keys[i] != expected[i]){
+				throw new Error;
+			}
+		}
+	} catch (e){
+		return{
+			status: 400,
+			data: {
+				Error: "body is not properly formatted! Please reference the YAML"
+			}
+		}
+	}
+
+  await dao
+    .run(
+      `INSERT INTO tour(title,difficulty,distance,duration,description,location,creatorID) VALUES(?,?,?,?,?,?,?)`,
+      [
+        options.body.title,
+        options.body.difficulty,
+        options.body.distance,
+        options.body.duration,
+        options.body.description,
+        options.body.location,
+        options.body.creatorID,
+      ]
+    ).then(
+      function(){
+        console.log("Creating tour with title: " + options.body.title);
+      });
+
+
   return {
     status: 201,
-    data: 'createTour ok!'
+    data: 'Created tour with title: ' + options.body.title
+
   };
 };
 
@@ -76,35 +141,41 @@ module.exports.createTour = async (options) => {
  * @return {Promise}
  */
 module.exports.getTour = async (options) => {
-  return await dao.get(
-    `SELECT tID, title, difficulty, location, distance, duration, description, creatorID FROM tour WHERE tID = ?`, 
-    [options.TID]
 
-  )
-  .then(
-    (value) =>  {
-      if (value.length > 0){
-        tour = value["0"]
-        console.log("Getting information about tour " + tour.tID)
-        return {
-          status: 200,
-          data: {
-            id: tour.tID,
-            title: tour.title,
-            difficulty: tour.difficulty,
-            location: tour.location,
-            distance: tour.distance,
-            duration: tour.duration,
-            description: tour.description,
-            creatorID: tour.creatorID
-          }
-        };
-      } else {
-        return {
-          status: 400
-        }
-      }
+	console.log("getting Tour");
+
+	if(options.TID != undefined){
+		if(isNaN(options.TID)) {
+			return {
+				status: 400,
+				data: {
+					Error: "Expected Number for TID"
+				}
+			}
+		};
+	}
+
+	var returnData = [];
+  await dao
+  .get('SELECT * from tour WHERE tID = ' + options.TID).then(function(value){
+			console.log(value);
+      returnData = value;
     });
+	
+	if(returnData.length == 0){
+		return {
+			status: 404,
+			data: {
+				Error: "Could not find tour with id: " + options.TID
+			}
+		}
+	}
+
+  return {
+    status: 200,
+    data: returnData
+  };
+
 };
 
 /**
