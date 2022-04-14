@@ -7,7 +7,7 @@ const dao = new DBO("./db/db/web.sqlite");
  * @return {Promise}
  */
 module.exports.getUser = async (options) => {
-  var user =null;
+  var user = null;
   await dao
     .get(
       `SELECT uID, firstName, surName, userName, eMail, walletID FROM user WHERE userName = ?`, [options.username]
@@ -22,10 +22,10 @@ module.exports.getUser = async (options) => {
     status: 200,
     data: {
       id: user.uID,
-      firstName: user.firstName,
-      surName: user.surName,
-      userName: user.userName,
-      eMail: user.eMail,
+      firstname: user.firstName,
+      surname: user.surName,
+      username: user.userName,
+      email: user.eMail,
       walletID: user.walletID
     },
   };
