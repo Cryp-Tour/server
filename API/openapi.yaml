@@ -434,7 +434,7 @@ components:
         email:
           type: string
           format: email
-        wallet-id:
+        walletID:
           type: string
     UserRegister:
       required:
@@ -465,10 +465,11 @@ components:
         - id
         - title
         - difficulty
-        - start-location
+        - location
         - distance 
         - duration
         - description
+        - creatorID
       properties:
         id:
           type: integer
@@ -478,13 +479,15 @@ components:
         difficulty:
           type: integer
           format: int32
-        start-location:
+        location:
           type: string
         distance:
           type: number
         duration:
           type: number
         description:
+          type: string
+        creatorID:
           type: string
     Tours:
       type: array

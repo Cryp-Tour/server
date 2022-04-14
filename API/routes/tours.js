@@ -46,7 +46,7 @@ router.post('/', async (req, res, next) => {
  */
 router.get('/:TID', async (req, res, next) => {
   const options = {
-    TID: req.params['TID']
+    TID: req.params['TID'],
   };
 
   try {
