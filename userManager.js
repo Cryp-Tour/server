@@ -2,6 +2,10 @@ var DBO = require("./db/dbo");
 const dao = new DBO("./db/db/web.sqlite");
 
 module.exports.checkAuthorizationHeader = async (header) => {
+    if (!header) {
+        console.log("UserManager: missing Authorization header");
+        return false;
+    }
     var splittedHash = Buffer.from(header.split("Basic ")[1], "base64").toString().split(":");
     var username = splittedHash[0];
     var password = splittedHash[1];
