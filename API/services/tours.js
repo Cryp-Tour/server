@@ -29,11 +29,23 @@ module.exports.listTours = async (options) => {
   //   status: 500, // Or another error code.
   //   error: 'Server Error' // Or another error message.
   // });
+  var sqlQuery = "";
+  
+  
+
+  
+  var returnData = [];
+  await dao
+  .get('SELECT * from tour ' + sqlQuery).then(function(value){
+      console.log(value);
+      returnData = value;
+    });
 
   return {
     status: 200,
-    data: {
-      
+    data: returnData,
+    header: {
+      "NumberOfResults": returnData.length,
     }
   };
 };

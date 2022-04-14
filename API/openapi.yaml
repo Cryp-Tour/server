@@ -72,6 +72,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Tours"
+          headers:
+            NumberOfResults:
+              schema:
+                type: number
+              description: "How many Tours were found"
         400:
           description: unexpected error
           content:
@@ -479,7 +484,7 @@ components:
         description:
           type: string
         creatorID:
-          type: number
+          type: string
     Tours:
       type: array
       items:

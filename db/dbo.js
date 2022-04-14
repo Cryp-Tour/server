@@ -130,7 +130,7 @@ class DBO {
         })
     }
 
-    //used to get multiple entrieb back from select
+    //used to get multiple entries back from select
     get(sql, params = []) {
         return new Promise((resolve, reject) => {
             this.db.all(sql, params, (err, rows) => {
