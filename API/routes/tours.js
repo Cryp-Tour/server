@@ -1,6 +1,6 @@
 const express = require('express');
 const tours = require('../services/tours');
-
+const fs = require('fs');
 const router = new express.Router();
 
 
@@ -109,14 +109,20 @@ router.get('/:TID/image', async (req, res, next) => {
 /**
  * Get a tour gpx file
  */
-router.get('/:TID/gpx', async (req, res, next) => {
+router.get('/:TID/gpx', (req, res, next) => {
+  // TODO: check if user bought tour
   const options = {
     TID: req.params['TID']
   };
 
   try {
-    const result = await tours.getTourGpx(options);
-    res.status(result.status || 200).send(result.data);
+    const result = tours.getTourGpx(options);
+    var file = fs.readFileSync(result.filename);
+
+    // return file
+    res.setHeader('Content-Length', file.length);
+    res.write(file, 'binary');
+    res.end();
   } catch (err) {
     next(err);
   }

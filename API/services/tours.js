@@ -1,5 +1,7 @@
 const { download } = require('express/lib/response');
 const ServerError = require('../lib/error');
+const FileResult = require('../lib/fileResult');
+const gpxManager = require("../../gpxManager");
 var DBO = require("../../db/dbo");
 const dao = new DBO("./db/db/web.sqlite");
 /**
@@ -195,28 +197,10 @@ module.exports.getTourImage = async (options) => {
  * @throws {Error}
  * @return {Promise}
  */
-module.exports.getTourGpx = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
+module.exports.getTourGpx = (options) => {
+  var filePath = gpxManager.getTourGpxPath(options.TID);
 
-  return {
-    status: 200,
-    data: 'getTourGpx ok!'
-  };
+  return new FileResult(filePath);
 };
 
 /**
