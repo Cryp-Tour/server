@@ -76,30 +76,35 @@ module.exports.createTour = async (options) => {
  * @return {Promise}
  */
 module.exports.getTour = async (options) => {
-  await dao.get(
+  return await dao.get(
     `SELECT tID, title, difficulty, location, distance, duration, description, creatorID FROM tour WHERE tID = ?`, 
     [options.TID]
 
   )
   .then(
     (value) =>  {
-      tour = value["0"]
-      console.log("Getting information about tour " + tour.tID)
+      if (value.length > 0){
+        tour = value["0"]
+        console.log("Getting information about tour " + tour.tID)
+        return {
+          status: 200,
+          data: {
+            id: tour.tID,
+            title: tour.title,
+            difficulty: tour.difficulty,
+            location: tour.location,
+            distance: tour.distance,
+            duration: tour.duration,
+            description: tour.description,
+            creatorID: tour.creatorID
+          }
+        };
+      } else {
+        return {
+          status: 400
+        }
+      }
     });
-
-  return {
-    status: 200,
-    data: {
-      id: tour.tID,
-      title: tour.title,
-      difficulty: tour.difficulty,
-      location: tour.location,
-      distance: tour.distance,
-      duration: tour.duration,
-      description: tour.description,
-      creatorID: tour.creatorID
-    }
-  };
 };
 
 /**
