@@ -90,6 +90,11 @@ module.exports.listTours = async (options) => {
  * @return {Promise}
  */
 module.exports.createTour = async (options) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
 
 	var expected = ['title', 'difficulty', 'location', 'distance', 'duration', 'description', 'creatorID'];
 	var keys = Object.keys(options.body);
@@ -185,6 +190,12 @@ module.exports.getTour = async (options) => {
  * @return {Promise}
  */
 module.exports.deleteTour = async (options) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+
 
   // TODO Check if User owns tour
 
@@ -236,6 +247,11 @@ module.exports.deleteTour = async (options) => {
  * @return {Promise}
  */
 module.exports.uploadImage = async (options) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
   // Implement your business logic here...
   //
   // This function should return as follows:
@@ -279,6 +295,11 @@ module.exports.getTourImage = (options) => {
  * @return {Promise}
  */
 module.exports.getTourGpx = (options) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
   var filePath = gpxManager.getTourGpxPath(options.TID);
 
   return new FileResult(filePath);
@@ -291,6 +312,11 @@ module.exports.getTourGpx = (options) => {
  * @return {Promise}
  */
 module.exports.uploadGpx = async (options) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
   // Implement your business logic here...
   //
   // This function should return as follows:
@@ -321,6 +347,11 @@ module.exports.uploadGpx = async (options) => {
  * @return {Promise}
  */
 module.exports.rateTour = async (options) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
   // Implement your business logic here...
   //
   // This function should return as follows:
