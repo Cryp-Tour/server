@@ -1,10 +1,8 @@
-var express = require('express');        // critical module for building a Web Server App
-// Here are some basic packages we need together with express
-var bodyParser = require('body-parser'); // helper routines to parse data as JSON in request body
-var fetch = require('node-fetch');       // http Server requests similar to the Client Version
-var basicAuth = require('express-basic-auth'); // Some basic HTTP Header Authorization
-var DBO = require('./db/dbo'); //module for db requests and db creation
-var morgan = require('morgan')
+const express = require('express');
+const bodyParser = require('body-parser'); // helper routines to parse data as JSON in request body
+const DBO = require('./db/dbo'); //module for db requests and db creation
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit')
 
 //----------------------------------------------------------------------------
 // connect to db
@@ -41,6 +39,17 @@ var server = app.listen(3030, function() {
     console.log('listening:', 3030);
     console.log('***********************************');
   });
+
+
+const limiter = rateLimit({
+	windowMs: 1 * 60 * 1000, // 1 minutes
+	max: 60, // Limit each IP to 60 requests per `window`
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
+
+app.use('/', limiter);
+
 
 /*
  * Routes
