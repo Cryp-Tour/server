@@ -1,7 +1,12 @@
+const { download } = require('express/lib/response');
 const ServerError = require('../lib/error');
-var DBO = require('../../db/dbo'); //module for db requests and db creation
-const { type } = require('express/lib/response');
-const dao = new DBO('./db/db/web.sqlite');
+
+const FileResult = require('../lib/fileResult');
+const gpxManager = require("../../gpxManager");
+const imageManager = require("../../imageManager");
+var DBO = require("../../db/dbo");
+const dao = new DBO("./db/db/web.sqlite");
+
 /**
  * @param {Object} options
  * @param {String} options.searchQuery Search by title of the tour
@@ -125,6 +130,7 @@ module.exports.createTour = async (options) => {
   return {
     status: 201,
     data: 'Created tour with title: ' + options.body.title
+
   };
 };
 
@@ -135,6 +141,7 @@ module.exports.createTour = async (options) => {
  * @return {Promise}
  */
 module.exports.getTour = async (options) => {
+
 	console.log("getting Tour");
 
 	if(options.TID != undefined){
@@ -168,6 +175,7 @@ module.exports.getTour = async (options) => {
     status: 200,
     data: returnData
   };
+
 };
 
 /**
@@ -177,27 +185,48 @@ module.exports.getTour = async (options) => {
  * @return {Promise}
  */
 module.exports.deleteTour = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
 
-  return {
-    status: 200,
-    data: 'deleteTour ok!'
-  };
+  // TODO Check if User owns tour
+
+  return await dao.get(
+    `SELECT tourID FROM userTours WHERE tourID = ?`, [options.TID]
+  )
+  .then(
+    async (value) => {
+        tour = value["0"]
+        if (typeof tour === 'undefined') {
+          return await dao.run(
+            `DELETE FROM tour WHERE tID = ?`, [options.TID]
+          )
+          .then(
+            async (value) =>  {
+              console.log("Deleting tour with id " + options.TID)
+              return {
+                status: 204,
+              }
+            },
+            (err) => {
+              return {
+                status: 400
+              }
+            }
+          )  
+        } else {
+          console.log("Tour is already bought and therefore cannot be deleted.")
+          return {
+            status: 403,
+            data: {
+              Error: "Tour is already bought and therefore cannot be deleted."
+            }
+          }
+        }
+    },
+    (err) => {
+      return {
+        status: 400
+      }
+    }
+  );
 };
 
 /**
@@ -233,31 +262,14 @@ module.exports.uploadImage = async (options) => {
 /**
  * @param {Object} options
  * @param {Integer} options.TID The ID of the tour to retrieve
+ * @param {Integer} options.IID The ID of the image of the tour to retrieve
  * @throws {Error}
  * @return {Promise}
  */
-module.exports.getTourImage = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
+module.exports.getTourImage = (options) => {
+  var filePath = imageManager.getImagePath(options.TID, options.IID);
 
-  return {
-    status: 200,
-    data: 'getTourImage ok!'
-  };
+  return new FileResult(filePath);
 };
 
 /**
@@ -266,28 +278,10 @@ module.exports.getTourImage = async (options) => {
  * @throws {Error}
  * @return {Promise}
  */
-module.exports.getTourGpx = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
+module.exports.getTourGpx = (options) => {
+  var filePath = gpxManager.getTourGpxPath(options.TID);
 
-  return {
-    status: 200,
-    data: 'getTourGpx ok!'
-  };
+  return new FileResult(filePath);
 };
 
 /**

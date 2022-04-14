@@ -1,5 +1,6 @@
 const express = require('express');
 const user = require('../services/user');
+const userManager = require('../../userManager');
 
 const router = new express.Router();
 
@@ -8,7 +9,15 @@ const router = new express.Router();
  * Get info about myself
  */
 router.get('/', async (req, res, next) => {
+  var username = await userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+
   const options = {
+    body: req.body,
+    username: username
   };
 
   try {
@@ -39,9 +48,15 @@ router.post('/', async (req, res, next) => {
  * edit the information of an existing user
  */
 router.patch('/', async (req, res, next) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+
   const options = {
     body: req.body,
-    username: atob(req.headers.authorization.split("Basic ")[1]).split(":")[0]
+    username: username
   };
 
   try {
@@ -56,9 +71,15 @@ router.patch('/', async (req, res, next) => {
  * connect an Ethereum wallet to the user
  */
 router.post('/connectWallet', async (req, res, next) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+
   const options = {
     body: req.body,
-    username: atob(req.headers.authorization.split("Basic ")[1]).split(":")[0]
+    username: username
   };
 
   try {
