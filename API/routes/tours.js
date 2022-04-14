@@ -2,6 +2,8 @@ const express = require('express');
 const tours = require('../services/tours');
 const fs = require('fs');
 const router = new express.Router();
+var multer  = require('multer');
+const upload = multer();
 
 
 /**
@@ -76,9 +78,9 @@ router.delete('/:TID', async (req, res, next) => {
 /**
  * Upload an image file
  */
-router.post('/:TID/image', async (req, res, next) => {
+router.post('/:TID/image', upload.single('file'), async (req, res, next) => {
   const options = {
-    body: req.body,
+    file: req.file,
     TID: req.params['TID']
   };
 
