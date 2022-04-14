@@ -469,6 +469,7 @@ components:
         - distance 
         - duration
         - description
+        - creatorID
       properties:
         id:
           type: integer
@@ -485,6 +486,8 @@ components:
         duration:
           type: number
         description:
+          type: string
+        creatorID:
           type: string
     Tours:
       type: array
