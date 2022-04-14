@@ -64,7 +64,7 @@ module.exports.createTour = async (options) => {
   //   status: 500, // Or another error code.
   //   error: 'Server Error' // Or another error message.
   // });
-
+  
   return {
     status: 201,
     data: 'createTour ok!'
@@ -116,27 +116,48 @@ module.exports.getTour = async (options) => {
  * @return {Promise}
  */
 module.exports.deleteTour = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
 
-  return {
-    status: 200,
-    data: 'deleteTour ok!'
-  };
+  // TODO Check if User owns tour
+
+  return await dao.get(
+    `SELECT tourID FROM userTours WHERE tourID = ?`, [options.TID]
+  )
+  .then(
+    async (value) => {
+        tour = value["0"]
+        if (typeof tour === 'undefined') {
+          return await dao.run(
+            `DELETE FROM tour WHERE tID = ?`, [options.TID]
+          )
+          .then(
+            async (value) =>  {
+              console.log("Deleting tour with id " + options.TID)
+              return {
+                status: 204,
+              }
+            },
+            (err) => {
+              return {
+                status: 400
+              }
+            }
+          )  
+        } else {
+          console.log("Tour is already bought and therefore cannot be deleted.")
+          return {
+            status: 403,
+            data: {
+              Error: "Tour is already bought and therefore cannot be deleted."
+            }
+          }
+        }
+    },
+    (err) => {
+      return {
+        status: 400
+      }
+    }
+  );
 };
 
 /**
