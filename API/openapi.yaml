@@ -45,16 +45,30 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: minLength
+        - name: minDistance
           in: query
           description: Search by minimum tour length
           required: false
           schema:
             type: integer
             format: int32
-        - name: maxLength
+        - name: maxDistance
           in: query
           description: Search by maximum tour length
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: minTime
+          in: query
+          description: Search by minimum tour time 
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: maxTime
+          in: query
+          description: Search by maximum tour time 
           required: false
           schema:
             type: integer
