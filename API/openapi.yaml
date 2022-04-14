@@ -186,6 +186,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /tourc/{TID}/image/{IID}:
     get:
       summary: Get a tour image
       operationId: getTourImage
@@ -197,7 +198,14 @@ paths:
         - name: TID
           in: path
           required: true
-          description: The ID of the tour to retrieve
+          description: The ID of the tour
+          schema:
+            type: integer
+            format: int64
+        - name: IID
+          in: path
+          required: true
+          description: The ID of the image to retrieve
           schema:
             type: integer
             format: int64
