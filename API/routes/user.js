@@ -43,7 +43,7 @@ router.post('/', async (req, res, next) => {
 router.patch('/', async (req, res, next) => {
   const options = {
     body: req.body,
-    username: atob(req.headers.authorization.split("Basic ")[1]).split(":")[0]
+    username: Buffer.from(req.headers.authorization.split("Basic ")[1], "base64").toString().split(":")[0]
   };
 
   try {
@@ -60,7 +60,7 @@ router.patch('/', async (req, res, next) => {
 router.post('/connectWallet', async (req, res, next) => {
   const options = {
     body: req.body,
-    username: atob(req.headers.authorization.split("Basic ")[1]).split(":")[0]
+    username: Buffer.from(req.headers.authorization.split("Basic ")[1], "base64").toString().split(":")[0]
   };
 
   try {

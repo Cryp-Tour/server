@@ -36,7 +36,7 @@ class DBO {
         pwdHash varchar(255) NOT NULL,
         eMail varchar(255) NOT NULL,
         walletID varchar(255),
-        userName varchar(255) UNIQUE
+        userName varchar(255) UNIQUE NOT NULL
         )`;
       return this.run(sql);
     }
@@ -124,7 +124,7 @@ class DBO {
               console.log(err);
               reject(err);
             } else {
-              resolve({ id: this.lastID });
+              resolve({ id: this.lastID, changes: this.changes });
             }
           })
         })
