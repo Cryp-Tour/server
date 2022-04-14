@@ -7,26 +7,27 @@ const dao = new DBO("./db/db/web.sqlite");
  * @return {Promise}
  */
 module.exports.getUser = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
-
+  var user =null;
+  await dao
+    .get(
+      `SELECT uID, firstName, surName, userName, eMail, walletID FROM user WHERE userName = ?`, [options.username]
+    )
+    .then(
+      (value) => {
+        user = value["0"]
+        console.log("Getting information about user with username " + user.firstName);
+      });
+  
   return {
     status: 200,
-    data: "getUser ok!",
+    data: {
+      id: user.uID,
+      firstName: user.firstName,
+      surname: user.surName,
+      username: user.userName,
+      email: user.eMail,
+      walletId: user.walletID
+    },
   };
 };
 

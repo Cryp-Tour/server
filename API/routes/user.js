@@ -9,6 +9,8 @@ const router = new express.Router();
  */
 router.get('/', async (req, res, next) => {
   const options = {
+    body: req.body,
+    username: Buffer.from(req.headers.authorization.split("Basic ")[1], "base64").toString().split(":")[0]
   };
 
   try {
