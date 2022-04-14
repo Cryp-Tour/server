@@ -26,3 +26,13 @@ module.exports.checkAuthorizationHeader = async (header) => {
         return false;
     }
 };
+
+module.exports.getUserId = async (username) => {
+    var answer = await Promise.resolve(dao.get(`SELECT uID from user WHERE userName = ?`, username));
+    if (answer.length == 0) {
+        console.log(`UserManager: Invalid user ${username}`);
+        return undefined;
+    }
+
+    return answer[0].uID;
+};

@@ -4,6 +4,7 @@ const ServerError = require('../lib/error');
 const FileResult = require('../lib/fileResult');
 const gpxManager = require("../../gpxManager");
 const imageManager = require("../../imageManager");
+const userManager = require("../../userManager");
 var DBO = require("../../db/dbo");
 const dao = new DBO("./db/db/web.sqlite");
 
@@ -90,12 +91,6 @@ module.exports.listTours = async (options) => {
  * @return {Promise}
  */
 module.exports.createTour = async (options) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
-    return;
-  }
-
 	var expected = ['title', 'difficulty', 'location', 'distance', 'duration', 'description', 'creatorID'];
 	var keys = Object.keys(options.body);
 	try {
@@ -186,17 +181,11 @@ module.exports.getTour = async (options) => {
 /**
  * @param {Object} options
  * @param {Integer} options.TID The ID of the tour to delete
+ * @param {String} options.username username of the currently logged in user
  * @throws {Error}
  * @return {Promise}
  */
 module.exports.deleteTour = async (options) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
-    return;
-  }
-
-
   // TODO Check if User owns tour
 
   return await dao.get(
@@ -247,11 +236,6 @@ module.exports.deleteTour = async (options) => {
  * @return {Promise}
  */
 module.exports.uploadImage = async (options) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
-    return;
-  }
   // Implement your business logic here...
   //
   // This function should return as follows:
@@ -291,17 +275,23 @@ module.exports.getTourImage = (options) => {
 /**
  * @param {Object} options
  * @param {Integer} options.TID The ID of the tour to retrieve
+ * @param {Integer} options.username username of the currently logged in user
  * @throws {Error}
  * @return {Promise}
  */
-module.exports.getTourGpx = (options) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
-    return;
+module.exports.getTourGpx = async (options) => {
+  //check if user bought tour
+  var currentUid = await userManager.getUserId(options.username);
+  try {
+    var result = await dao.get("SELECT userID FROM userTours WHERE tourID = ? AND userID = ?", [options.TID, currentUid]);
+  } catch {
+    return {
+      status: 401,
+      data: "User not allowed to download gpx file"
+    }
   }
-  var filePath = gpxManager.getTourGpxPath(options.TID);
 
+  var filePath = gpxManager.getTourGpxPath(options.TID);
   return new FileResult(filePath);
 };
 
@@ -312,11 +302,6 @@ module.exports.getTourGpx = (options) => {
  * @return {Promise}
  */
 module.exports.uploadGpx = async (options) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
-    return;
-  }
   // Implement your business logic here...
   //
   // This function should return as follows:
@@ -347,11 +332,6 @@ module.exports.uploadGpx = async (options) => {
  * @return {Promise}
  */
 module.exports.rateTour = async (options) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
-    return;
-  }
   // Implement your business logic here...
   //
   // This function should return as follows:

@@ -2,6 +2,8 @@ const express = require('express');
 const tours = require('../services/tours');
 const fs = require('fs');
 const router = new express.Router();
+const userManager = require("../../userManager");
+const { response } = require('express');
 
 
 /**
@@ -32,6 +34,12 @@ router.get('/', async (req, res, next) => {
  * Create a tour
  */
 router.post('/', async (req, res, next) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+
   const options = {
     body: req.body
   };
@@ -64,8 +72,15 @@ router.get('/:TID', async (req, res, next) => {
  * Delete a specific tour
  */
 router.delete('/:TID', async (req, res, next) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+
   const options = {
-    TID: req.params['TID']
+    TID: req.params['TID'],
+    username: username
   };
 
   try {
@@ -80,6 +95,12 @@ router.delete('/:TID', async (req, res, next) => {
  * Upload an image file
  */
 router.post('/:TID/image', async (req, res, next) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+
   const options = {
     body: req.body,
     TID: req.params['TID']
@@ -118,20 +139,31 @@ router.get('/:TID/image/:IID', (req, res, next) => {
 /**
  * Get a tour gpx file
  */
-router.get('/:TID/gpx', (req, res, next) => {
-  // TODO: check if user bought tour
+router.get('/:TID/gpx', async (req, res, next) => {
+  var username = await userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+
   const options = {
-    TID: req.params['TID']
+    TID: req.params['TID'],
+    username: username
   };
 
   try {
-    const result = tours.getTourGpx(options);
-    var file = fs.readFileSync(result.filename);
-
-    // return file
-    res.setHeader('Content-Length', file.length);
-    res.write(file, 'binary');
-    res.end();
+    const result = await tours.getTourGpx(options);
+    if (result.filename) {
+      var file = fs.readFileSync(result.filename);
+  
+      // return file
+      res.setHeader('Content-Length', file.length);
+      res.write(file, 'binary');
+      res.end();
+      return;
+    } else {
+      res.status(result.status || 200).send(result.data);
+    }
   } catch (err) {
     next(err);
   }
@@ -141,6 +173,12 @@ router.get('/:TID/gpx', (req, res, next) => {
  * Upload a gpx file
  */
 router.post('/:TID/gpx', async (req, res, next) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+
   const options = {
     body: req.body,
     TID: req.params['TID']
@@ -158,6 +196,12 @@ router.post('/:TID/gpx', async (req, res, next) => {
  * Rate a tour
  */
 router.post('/:TID/rating', async (req, res, next) => {
+  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+
   const options = {
     TID: req.params['TID']
   };
