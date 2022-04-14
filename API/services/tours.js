@@ -1,4 +1,7 @@
+const { download } = require('express/lib/response');
 const ServerError = require('../lib/error');
+var DBO = require("../../db/dbo");
+const dao = new DBO("./db/db/web.sqlite");
 /**
  * @param {Object} options
  * @param {String} options.searchQuery Search by title of the tour
@@ -57,8 +60,26 @@ module.exports.createTour = async (options) => {
   //   error: 'Server Error' // Or another error message.
   // });
 
+  await dao
+    .run(
+      `INSERT INTO tour(title,difficulty,distance,duration,description,location,creatorID) VALUES(?,?,?,?,?,?,?)`,
+      [
+        options.body.title,
+        options.body.difficulty,
+        options.body.distance,
+        options.body.duration,
+        options.body.description,
+        options.body.location,
+        options.body.creatorID,
+      ]
+    ).then(
+      function(){
+        console.log("Creating tour with title: " + options.body.title);
+      });
+
+
   return {
-    status: 200,
+    status: 201,
     data: 'createTour ok!'
   };
 };
@@ -86,10 +107,29 @@ module.exports.getTour = async (options) => {
   //   status: 500, // Or another error code.
   //   error: 'Server Error' // Or another error message.
   // });
+  await dao.get(
+    `SELECT tID, title, difficulty, location, distance, duration, description, creatorID FROM tour WHERE tID = ?`, 
+    [options.TID]
+
+  )
+  .then(
+    (value) =>  {
+      tour = value["0"]
+      console.log("Getting information about tour " + tour.tID)
+    });
 
   return {
     status: 200,
-    data: 'getTour ok!'
+    data: {
+      id: tour.tID,
+      title: tour.title,
+      difficulty: tour.difficulty,
+      location: tour.location,
+      distance: tour.distance,
+      duration: tour.duration,
+      description: tour.description,
+      creatorID: tour.creatorID
+    }
   };
 };
 

@@ -465,7 +465,7 @@ components:
         - id
         - title
         - difficulty
-        - start-location
+        - location
         - distance 
         - duration
         - description
@@ -478,7 +478,7 @@ components:
         difficulty:
           type: integer
           format: int32
-        start-location:
+        location:
           type: string
         distance:
           type: number
