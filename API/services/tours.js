@@ -60,24 +60,6 @@ module.exports.createTour = async (options) => {
   //   error: 'Server Error' // Or another error message.
   // });
 
-  await dao
-    .run(
-      `INSERT INTO tour(title,difficulty,distance,duration,description,location,creatorID) VALUES(?,?,?,?,?,?,?)`,
-      [
-        options.body.title,
-        options.body.difficulty,
-        options.body.distance,
-        options.body.duration,
-        options.body.description,
-        options.body.location,
-        options.body.creatorID,
-      ]
-    ).then(
-      function(){
-        console.log("Creating tour with title: " + options.body.title);
-      });
-
-
   return {
     status: 201,
     data: 'createTour ok!'
