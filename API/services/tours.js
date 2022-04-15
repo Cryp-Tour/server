@@ -320,27 +320,37 @@ module.exports.getTourGpx = async (options) => {
  * @return {Promise}
  */
 module.exports.uploadGpx = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
+  const mimetypes = ["application/gpx+xml"];
 
-  return {
-    status: 200,
-    data: 'uploadGpx ok!'
-  };
+  if (mimetypes.includes(options.file.mimetype)){
+    //check if tour exist
+    return await dao.get("SELECT COUNT(*) as count FROM tour WHERE tid = ?", [options.TID]).then(
+      async (value) => {
+        if(value[0].count > 0){
+              let filePath = gpxManager.getTourGpxPath(options.TID);
+              let folderPath = folderManager.getFolderPath(options.TID);
+              folderManager.createFolderIfNotExists(folderPath);
+              fs.writeFileSync(filePath, options.file.buffer);
+              return {
+                status: 200,
+                data: 'uploadGPX ok!'
+              };
+        } else {
+          return {
+            status: 400
+          };
+        }
+      }, (err) => {
+        return {
+          status: 400
+        };
+      }
+    );
+  } else {
+    return {
+      status: 400,
+    }
+  }
 };
 
 /**

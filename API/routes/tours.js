@@ -174,7 +174,7 @@ router.get('/:TID/gpx', async (req, res, next) => {
 /**
  * Upload a gpx file
  */
-router.post('/:TID/gpx', async (req, res, next) => {
+router.post('/:TID/gpx', upload.single('file'), async (req, res, next) => {
   var username = awaituserManager.checkAuthorizationHeader(req.headers.authorization);
   if (!username){
     res.status(401).send("Invalid authorization!");
@@ -182,7 +182,7 @@ router.post('/:TID/gpx', async (req, res, next) => {
   }
 
   const options = {
-    body: req.body,
+    file: req.file,
     TID: req.params['TID']
   };
 
