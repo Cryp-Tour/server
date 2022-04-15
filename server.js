@@ -1,7 +1,7 @@
-const express = require('express');
-const bodyParser = require('body-parser'); // helper routines to parse data as JSON in request body
-const DBO = require('./db/dbo'); //module for db requests and db creation
-const morgan = require('morgan');
+var express = require('express');        // critical module for building a Web Server App
+var bodyParser = require('body-parser'); // helper routines to parse data as JSON in request body
+var DBO = require('./db/dbo'); //module for db requests and db creation
+var morgan = require('morgan');
 const rateLimit = require('express-rate-limit')
 
 //----------------------------------------------------------------------------

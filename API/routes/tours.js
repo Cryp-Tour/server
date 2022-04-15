@@ -2,6 +2,8 @@ const express = require('express');
 const tours = require('../services/tours');
 const fs = require('fs');
 const router = new express.Router();
+var multer  = require('multer');
+const upload = multer();
 const userManager = require("../../userManager");
 const { response } = require('express');
 
@@ -94,7 +96,7 @@ router.delete('/:TID', async (req, res, next) => {
 /**
  * Upload an image file
  */
-router.post('/:TID/image', async (req, res, next) => {
+router.post('/:TID/image', upload.single('file'), async (req, res, next) => {
   var username = await userManager.checkAuthorizationHeader(req.headers.authorization);
   if (!username){
     res.status(401).send("Invalid authorization!");
@@ -102,7 +104,7 @@ router.post('/:TID/image', async (req, res, next) => {
   }
 
   const options = {
-    body: req.body,
+    file: req.file,
     TID: req.params['TID']
   };
 

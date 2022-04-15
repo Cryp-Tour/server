@@ -4,9 +4,11 @@ const ServerError = require('../lib/error');
 const FileResult = require('../lib/fileResult');
 const gpxManager = require("../../gpxManager");
 const imageManager = require("../../imageManager");
-const userManager = require("../../userManager");
+const folderManager = require("../../folderManager");
 var DBO = require("../../db/dbo");
 const dao = new DBO("./db/db/web.sqlite");
+const fs = require('fs');
+const userManager = require("../../userManager");
 
 /**
  * @param {Object} options
@@ -234,27 +236,45 @@ module.exports.deleteTour = async (options) => {
  * @return {Promise}
  */
 module.exports.uploadImage = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
+  const mimetypes = ["image/jpeg", "image/svg+xml", "image/png"];
 
-  return {
-    status: 200,
-    data: 'uploadImage ok!'
-  };
+  if (mimetypes.includes(options.file.mimetype)){
+    //check if tour exist
+    return await dao.get("SELECT COUNT(*) as count FROM tour WHERE tid = ?", [options.TID]).then(
+      async (value) => {
+        if(value[0].count > 0){
+          return await dao.run("INSERT INTO tourImage(tourID) VALUES (?)", [options.TID]).then(
+            (value) => {
+              let filePath = imageManager.getImagePath(options.TID, value.id);
+              let folderPath = folderManager.getFolderPath(options.TID);
+              folderManager.createFolderIfNotExists(folderPath);
+              fs.writeFileSync(filePath, options.file.buffer);
+              return {
+                status: 200,
+                data: 'uploadImage ok!'
+              };
+            }, (err) => {
+              return {
+                status: 400
+              }
+            }
+          )
+        } else {
+          return {
+            status: 400
+          };
+        }
+      }, (err) => {
+        return {
+          status: 400
+        };
+      }
+    );
+  } else {
+    return {
+      status: 400,
+    }
+  }
 };
 
 /**
