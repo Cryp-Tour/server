@@ -48,7 +48,7 @@ router.post('/', async (req, res, next) => {
  * edit the information of an existing user
  */
 router.patch('/', async (req, res, next) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  var username = await userManager.checkAuthorizationHeader(req.headers.authorization);
   if (!username){
     res.status(401).send("Invalid authorization!");
     return;
@@ -71,7 +71,7 @@ router.patch('/', async (req, res, next) => {
  * connect an Ethereum wallet to the user
  */
 router.post('/connectWallet', async (req, res, next) => {
-  var username = userManager.checkAuthorizationHeader(req.headers.authorization);
+  var username = await userManager.checkAuthorizationHeader(req.headers.authorization);
   if (!username){
     res.status(401).send("Invalid authorization!");
     return;
