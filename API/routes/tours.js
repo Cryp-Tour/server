@@ -6,6 +6,7 @@ var multer  = require('multer');
 const upload = multer();
 const userManager = require("../../userManager");
 const { response } = require('express');
+const FileNotFoundError = require('../lib/error');
 
 
 /**
@@ -134,7 +135,12 @@ router.get('/:TID/image/:IID', (req, res, next) => {
     res.write(file, 'binary');
     res.end();
   } catch (err) {
-    next(err);
+    if (err instanceof FileNotFoundError) {
+      res.status(err.status).send(err.error);
+    }
+    else {
+      next(err);
+    }
   }
 });
 
@@ -167,7 +173,12 @@ router.get('/:TID/gpx', async (req, res, next) => {
       res.status(result.status || 200).send(result.data);
     }
   } catch (err) {
-    next(err);
+    if (err instanceof FileNotFoundError) {
+      res.status(err.status).send(err.error);
+    }
+    else {
+      next(err);
+    }
   }
 });
 

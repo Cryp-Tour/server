@@ -1,5 +1,6 @@
 const { download, get } = require('express/lib/response');
 const ServerError = require('../lib/error');
+const FileNotFoundError = require('../lib/error');
 
 const FileResult = require('../lib/fileResult');
 const gpxManager = require("../../gpxManager");
@@ -300,7 +301,17 @@ module.exports.uploadImage = async (options) => {
 module.exports.getTourImage = (options) => {
   var filePath = imageManager.getImagePath(options.TID, options.IID);
 
-  return new FileResult(filePath);
+  if(fs.existsSync(filePath)){
+    return new FileResult(filePath);
+  }
+  else {
+    var errorInput = {
+      status: 404,
+      error:"Could not find image with ID: " + options.IID + " for tour with ID:" + options.TID
+    };
+    throw new FileNotFoundError(errorInput);
+  }
+  
 };
 
 /**
@@ -323,7 +334,17 @@ module.exports.getTourGpx = async (options) => {
   }
 
   var filePath = gpxManager.getTourGpxPath(options.TID);
-  return new FileResult(filePath);
+  if(fs.existsSync(filePath)){
+    return new FileResult(filePath);
+  }
+  else {
+    var errorInput = {
+      status: 404,
+      error:"Could not find GPX Data for Tour with ID: " + options.TID
+    };
+    throw new FileNotFoundError(errorInput);
+  }
+  
 };
 
 /**
