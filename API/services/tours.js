@@ -76,6 +76,14 @@ module.exports.listTours = async (options) => {
   .get('SELECT * from tour ' + sqlQuery).then(function(value){
 			console.log(value);
       returnData = value;
+    }).then(async () => { 
+      if (returnData.length > 0) {
+        for (i = 0; i < returnData.length; i++) {
+          await dao.get(`SELECT tiID from tourImage WHERE tourID = ?`, [returnData[i]["tID"]]).then((value) => {
+            returnData[i].tourImages = value
+          })
+        }
+      }
     });
 
   return {
@@ -162,6 +170,11 @@ module.exports.getTour = async (options) => {
   .get('SELECT * from tour WHERE tID = ' + options.TID).then(function(value){
 			console.log(value);
       returnData = value;
+    }).then(async () => {
+      return await dao.get(`SELECT tiID from tourImage WHERE tourID = ?`, [options.TID]).then((value) => {
+        console.log(value)
+        returnData[0].tourImages = value
+      })
     });
 	
 	if(returnData.length == 0){

@@ -513,6 +513,13 @@ components:
           type: string
         creatorID:
           type: string
+        tourImages:
+          type: array
+          items:
+            type: object
+            properties:
+              tiID:
+                type: string
     Tours:
       type: array
       items:
