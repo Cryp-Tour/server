@@ -1,5 +1,6 @@
 var DBO = require("./db/dbo");
 const dao = new DBO("./db/db/web.sqlite");
+const bcrypt = require ('bcrypt');
 
 module.exports.checkAuthorizationHeader = async (header) => {
     if (!header) {
@@ -17,14 +18,13 @@ module.exports.checkAuthorizationHeader = async (header) => {
     }
 
     var passwordFromDb = answer[0].pwdHash;
-    // TODO: use password hashing
-    if (password == passwordFromDb){
+    return await bcrypt.compare(password, passwordFromDb).then(function(result) {
         console.log("User authenticated!");
         return username;
-    } else {
+    },function(err){
         console.log(`UserManager: Someone tried to authenticate as ${username} but used the wrong password`);
         return false;
-    }
+    });
 };
 
 module.exports.getUserId = async (username) => {
