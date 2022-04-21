@@ -192,10 +192,13 @@ paths:
         description: The Image file
         required: true
         content:
-          image/jpeg:
+          multipart/form-data:
             schema:
-                type: string
-                format: binary
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
       responses:
         201:
           description: Image successfully uploaded
@@ -297,10 +300,13 @@ paths:
         description: The GPX file
         required: true
         content:
-          application/octet-stream:
+          multipart/form-data:
             schema:
-                type: string
-                format: binary
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
       responses:
         201:
           description: GPX successfully uploaded
