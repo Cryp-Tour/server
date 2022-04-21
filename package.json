@@ -17,13 +17,14 @@
   },
   "homepage": "https://github.com/cryp-tour/server#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "bluebird": "^3.7.2",
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
     "express-basic-auth": "^1.2.0",
+    "express-rate-limit": "^6.3.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.4",
-    "express-rate-limit": "^6.3.0",
     "node-fetch": "^2.6.1",
     "sqlite3": "^5.0.2"
   },
