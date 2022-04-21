@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/cryp-tour/server#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "bluebird": "^3.7.2",
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
