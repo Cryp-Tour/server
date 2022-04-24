@@ -3,6 +3,8 @@ var bodyParser = require('body-parser'); // helper routines to parse data as JSO
 var DBO = require('./db/dbo'); //module for db requests and db creation
 var morgan = require('morgan');
 const rateLimit = require('express-rate-limit')
+const cryptoManager = require("./cryptoManager");
+require('dotenv').config()
 
 //----------------------------------------------------------------------------
 // connect to db
@@ -20,6 +22,9 @@ dao.run(
   }
 );
 */
+
+// connect blockchain
+cryptoManager.connectBlockchain();
 
 //----------------------------------------------------------------------------
 // create a new express based Web Server
