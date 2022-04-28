@@ -167,3 +167,26 @@ module.exports.connectWallet = async (options) => {
       };
     });
 };
+
+/**
+ * @param {Object} options
+ * @throws {Error}
+ * @return {Promise}
+ */
+ module.exports.getCreatedTours = async (options) => {
+  var returnData = [];
+  await dao
+  .get('SELECT uID FROM user WHERE userName = ?', [options.username]).then(async (value) => { 
+      if (value.length > 0) {
+        console.log("Getting created tours for user " + options.username);
+        await dao.get(`SELECT * FROM tour WHERE creatorID = ?`, [value[0].uID]).then(async (value) => {
+          returnData = value
+        })
+      }
+    });
+
+  return {
+    status: 200,
+    data: returnData,
+  };
+};
