@@ -90,6 +90,28 @@ router.patch('/', async (req, res, next) => {
 });
 
 /**
+ * Get my created tours
+ */
+ router.get('/boughtTours', async (req, res, next) => {
+  var username = await userManager.checkAuthorizationHeader(req.headers.authorization);
+  if (!username){
+    res.status(401).send("Invalid authorization!");
+    return;
+  }
+  const options = {
+    body: req.body,
+    uid: await userManager.getUserId(username)
+  };
+
+  try {
+    const result = await user.getBoughtTours(options);
+    res.status(result.status || 200).send(result.data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * connect an Ethereum wallet to the user
  */
 router.post('/connectWallet', async (req, res, next) => {
