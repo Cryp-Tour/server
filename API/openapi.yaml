@@ -110,7 +110,7 @@ paths:
         content:
           application/json:
             schema: 
-              $ref: "#/components/schemas/Tour"
+              $ref: "#/components/schemas/TourCreate"
       responses:
         201:
           description: Tour successfully created
@@ -147,6 +147,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        404:
+          description: Tour not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
     delete:
       summary: Delete a specific tour
@@ -166,8 +172,20 @@ paths:
       responses:
         204:
           description: Tour deleted
+        401:
+          description: User does not own tour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         403:
           description: Tour already bought by someone. Unable to delete.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Tour not found
           content:
             application/json:
               schema:
@@ -214,8 +232,6 @@ paths:
       operationId: getTourImage
       tags:
         - Tours
-      security:
-        - basicAuth: []
       parameters:
         - name: TID
           in: path
@@ -239,6 +255,12 @@ paths:
               schema:
                 type: string
                 format: binary
+        404:
+          description: image not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         400:
           description: unexpected error
           content:
@@ -277,6 +299,18 @@ paths:
                 $ref: "#/components/schemas/Error"
         400:
           description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: user has not bought tour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: GPX not found
           content:
             application/json:
               schema:
@@ -383,8 +417,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     post:
       summary: create a new User
       operationId: createUser
@@ -404,8 +442,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     patch:
       summary: edit the information of an existing user
       operationId: patchUser
@@ -425,8 +467,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /user/connectWallet:
     post:
       summary: create a new User
@@ -444,7 +496,11 @@ paths:
         201:
           description: Wallet successfully connected
         401:
-          $ref: "#/components/responses/UnauthorizedError"   
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       
 components:
   schemas:
@@ -477,9 +533,6 @@ components:
         - username
         - password
       properties:
-        id:
-          type: integer
-          format: int64
         firstname:
           type: string
         surname:
@@ -494,9 +547,6 @@ components:
         wallet-id:
           type: string
     Tour:
-      required:
-        - title
-        - creatorID
       properties:
         title:
           type: string
@@ -520,6 +570,21 @@ components:
             properties:
               tiID:
                 type: string
+    TourCreate:
+      properties:
+        title:
+          type: string
+        difficulty:
+          type: integer
+          format: int32
+        location:
+          type: string
+        distance:
+          type: number
+        duration:
+          type: number
+        description:
+          type: string
     Tours:
       type: array
       items:

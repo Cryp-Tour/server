@@ -264,8 +264,7 @@ module.exports.uploadImage = async (options) => {
               folderManager.createFolderIfNotExists(folderPath);
               fs.writeFileSync(filePath, options.file.buffer);
               return {
-                status: 200,
-                data: 'uploadImage ok!'
+                status: 201
               };
             }, (err) => {
               return {
@@ -366,8 +365,7 @@ module.exports.uploadGpx = async (options) => {
               folderManager.createFolderIfNotExists(folderPath);
               fs.writeFileSync(filePath, options.file.buffer);
               return {
-                status: 200,
-                data: 'uploadGPX ok!'
+                status: 201
               };
         } else {
           return {
