@@ -10,6 +10,7 @@ var DBO = require("../../db/dbo");
 const dao = new DBO("./db/db/web.sqlite");
 const fs = require('fs');
 const userManager = require("../../userManager");
+const { disable } = require('express/lib/application');
 
 /**
  * @param {Object} options
@@ -424,26 +425,51 @@ module.exports.rateTour = async (options) => {
  * @return {Promise}
  */
 module.exports.getTourRating = async (options) => {
-  // Implement your business logic here...
-  //
-  // This function should return as follows:
-  //
-  // return {
-  //   status: 200, // Or another success code.
-  //   data: [] // Optional. You can put whatever you want here.
-  // };
-  //
-  // If an error happens during your business logic implementation,
-  // you should throw an error as follows:
-  //
-  // throw new ServerError({
-  //   status: 500, // Or another error code.
-  //   error: 'Server Error' // Or another error message.
-  // });
 
-  return {
-    status: 200,
-    data: 'getTourRating ok!'
-  };
+  console.log("Getting Tour Rating");
+  var status = 200;
+  return await dao
+  .get('SELECT * FROM tour WHERE tID = ' + options.TID).then( async (value) =>{
+    //console.log(value);
+    if(value.length == 0){
+      return {
+        status: 404,
+        data: "Error: Could not Find Tour with ID " +options.TID
+      }
+    }
+    else {
+      return await dao
+      .get('SELECT * from rating WHERE tourID = ' + options.TID).then( (value) =>{
+        console.log(value);
+        var returnData = value;
+        if(returnData.length == 0){
+          return {
+            status: 400,
+            data: {
+              Error: "no ratings submitted for this tour"
+            },
+            header: {
+              NumberOfResults: returnData.length
+            }
+          }
+        }
+        var ratingAvg = 0;
+        for(var i=0; i<value.length; i++){
+          ratingAvg += value[i]["rating"];
+        }
+        ratingAvg = ratingAvg / value.length;
+        return {
+          status: 200,
+          data: {
+            tourRating: ratingAvg
+          },
+          header: {
+            NumberOfResults: returnData.length
+          }
+        };
+      })
+    }
+  });
+
 };
 
