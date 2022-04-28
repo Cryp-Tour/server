@@ -239,6 +239,7 @@ router.get('/:TID/rating', async (req, res, next) => {
 
   try {
     const result = await tours.getTourRating(options);
+    res.header(result.header);
     res.status(result.status || 200).send(result.data);
   } catch (err) {
     next(err);
