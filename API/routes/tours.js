@@ -216,7 +216,9 @@ router.post('/:TID/rating', async (req, res, next) => {
   }
 
   const options = {
-    TID: req.params['TID']
+    TID: req.params['TID'],
+    body: req.body,
+    uID: await userManager.getUserId(username)
   };
 
   try {
