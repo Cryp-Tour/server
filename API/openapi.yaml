@@ -427,6 +427,25 @@ paths:
                 $ref: "#/components/schemas/User"
         401:
           $ref: "#/components/responses/UnauthorizedError"
+  /user/createdTours:
+    get:
+      summary: Get my created tours
+      operationId: getCreatedTours
+      tags:
+        - Users
+      responses:
+        200:
+          description: Tour found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tours"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /user/connectWallet:
     post:
       summary: create a new User
