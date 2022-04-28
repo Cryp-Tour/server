@@ -183,7 +183,15 @@ module.exports.connectWallet = async (options) => {
           returnData = value
         })
       }
-    });
+    }).then(async () => { 
+      if (returnData.length > 0) {
+        for (i = 0; i < returnData.length; i++) {
+          await dao.get(`SELECT tiID from tourImage WHERE tourID = ?`, [returnData[i]["tID"]]).then((value) => {
+            returnData[i].tourImages = value
+          })
+        }
+      }
+    });;
 
   return {
     status: 200,

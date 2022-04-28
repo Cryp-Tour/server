@@ -25,12 +25,6 @@ paths:
       tags:
         - Tours
       parameters:
-        - name: searchQuery
-          in: query
-          description: Search by title of the tour
-          required: false
-          schema:
-            type: string
         - name: minDifficulty
           in: query
           description: Search by minimum tour difficulty
@@ -59,16 +53,16 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: minTime
+        - name: minDuration
           in: query
-          description: Search by minimum tour time 
+          description: Search by minimum tour duration 
           required: false
           schema:
             type: integer
             format: int32
-        - name: maxTime
+        - name: maxDuration
           in: query
-          description: Search by maximum tour time 
+          description: Search by maximum tour duration 
           required: false
           schema:
             type: integer
@@ -141,6 +135,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Tour"
+        404:
+          description: Tour with tour id does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         400:
           description: unexpected error
           content:
@@ -166,6 +166,18 @@ paths:
       responses:
         204:
           description: Tour deleted
+        401:
+          description: User does not own tour. Unable to delete.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Tour with tour id does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         403:
           description: Tour already bought by someone. Unable to delete.
           content:
@@ -184,7 +196,7 @@ paths:
         - name: TID
           in: path
           required: true
-          description: The ID of the tour to delete
+          description: The ID of the tour
           schema:
             type: integer
             format: int64
@@ -192,7 +204,21 @@ paths:
         description: The Image file
         required: true
         content:
-          multipart/form-data:
+          image/svg+xml:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+          image/png:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+          image/jpeg:
             schema:
               type: object
               properties:
@@ -200,7 +226,7 @@ paths:
                   type: string
                   format: binary
       responses:
-        201:
+        200:
           description: Image successfully uploaded
         400:
           description: unexpected error
@@ -239,6 +265,12 @@ paths:
               schema:
                 type: string
                 format: binary
+        404:
+          description: image with image id does not exist for the tour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         400:
           description: unexpected error
           content:
@@ -269,8 +301,20 @@ paths:
               schema:
                 type: string
                 format: binary
+        401:
+          description: User not allowed to download gpx file
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         403:
           description: Tour not bought by current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Could not find GPX Data for Tour with ID
           content:
             application/json:
               schema:
@@ -331,11 +375,19 @@ paths:
           schema:
             type: integer
             format: int64
+      requestBody:
+        description: The rating
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Rating"
       tags:
         - Tours
       responses:
         201:
           description: Tour successfully rated
+          
         400:
           description: unexpected error
           content:
@@ -358,10 +410,15 @@ paths:
       responses:
         200:
           description: Tour Rating returned
+          headers:
+            NumberOfResults:
+              schema:
+                type: number
+              description: "How many Ratings were found"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Rating"
+                $ref: "#/components/schemas/RatingAverage"
         400:
           description: unexpected error
           content:
@@ -404,6 +461,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        500:
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         401:
           $ref: "#/components/responses/UnauthorizedError"
     patch:
@@ -425,6 +488,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        500:
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         401:
           $ref: "#/components/responses/UnauthorizedError"
   /user/createdTours:
@@ -517,6 +592,9 @@ components:
         - title
         - creatorID
       properties:
+        tID: 
+          type: integer
+          format: int64
         title:
           type: string
         difficulty:
@@ -531,34 +609,39 @@ components:
         description:
           type: string
         creatorID:
-          type: string
+          type: integer
+          format: int64
         tourImages:
           type: array
           items:
             type: object
             properties:
               tiID:
-                type: string
+                type: integer
+                format: int64
     Tours:
       type: array
       items:
         $ref: "#/components/schemas/Tour"
     Rating:
       required:
-        - rid
         - rating
-        - description
         - timestamp
+        - ownerID
       properties:
-        rid:
+        ownerID:
           type: integer
         rating:
           type: integer
-        description:
-          type: string
         timestamp:
           type: string
           format: date-time
+    RatingAverage:
+      required:
+        - rating
+      properties:
+        rating:
+          type: integer
     WalletConnect:
       properties:
         walletAddress:
