@@ -167,3 +167,47 @@ module.exports.connectWallet = async (options) => {
       };
     });
 };
+
+/**
+ * @param {Object} options
+ * @throws {Error}
+ * @return {Promise}
+ */
+ module.exports.getCreatedTours = async (options) => {
+  var returnData = [];
+  await dao
+  .get('SELECT uID FROM user WHERE userName = ?', [options.username]).then(async (value) => { 
+      if (value.length > 0) {
+        console.log("Getting created tours for user " + options.username);
+        await dao.get(`SELECT * FROM tour WHERE creatorID = ?`, [value[0].uID]).then(async (value) => {
+          returnData = value
+        })
+      }
+    });
+
+  return {
+    status: 200,
+    data: returnData,
+  };
+};
+
+/**
+ * @param {Object} options
+ * @throws {Error}
+ * @return {Promise}
+ */
+ module.exports.getBoughtTours = async (options) => {
+  return await dao.get('SELECT t.tid, t.description, t.title, t.duration, t.distance, t.difficulty, t.location, t.creatorID FROM userTours u left join tour t ON t.tid == u.tourID WHERE u.userID == ?', [options.uid]).then(
+    async (value) => { 
+      console.log(JSON.stringify(value));
+      return {
+        status: 200,
+        data: JSON.stringify(value),
+      };
+    }, (err) => {
+      return {
+        status: 500
+      }
+    }
+  );
+};

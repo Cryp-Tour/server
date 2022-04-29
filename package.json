@@ -20,6 +20,7 @@
     "bcrypt": "^5.0.1",
     "bluebird": "^3.7.2",
     "body-parser": "^1.13.3",
+    "dotenv": "^16.0.0",
     "express": "^4.13.3",
     "express-basic-auth": "^1.2.0",
     "express-rate-limit": "^6.3.0",
@@ -27,6 +28,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.4",
     "node-fetch": "^2.6.1",
+    "provider-js": "github:Cryp-Tour/provider-js",
     "sqlite3": "^5.0.2"
   },
   "engines": {
