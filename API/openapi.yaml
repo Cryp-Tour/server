@@ -365,12 +365,23 @@ paths:
           schema:
             type: integer
             format: int64
+      requestBody:
+        description: The rating from 1 to 5
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/Rating"
       tags:
         - Tours
       responses:
-        201:
-          description: Tour successfully rated
-        400:
+        200:
+          description: Rating added or updated
+        404:
+          description: Tour not found
+        406:
+          description: Rating not between 1 and 5
+        500:
           description: unexpected error
           content:
             application/json:
@@ -396,8 +407,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Rating"
+          headers:
+            NumberOfResults:
+              schema:
+                type: integer
+                description: Number of submitted ratings
         400:
           description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: tour not found
           content:
             application/json:
               schema:
@@ -424,7 +446,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
     post:
-      summary: create a new User
+      summary: Create a new User
       operationId: createUser
       tags:
         - Users
@@ -449,10 +471,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
     patch:
-      summary: edit the information of an existing user
+      summary: Edit the information of an existing user
       operationId: patchUser
       tags:
         - Users
+      security:
+        - basicAuth: []
       requestBody:
         description: The user information
         required: true
@@ -485,14 +509,41 @@ paths:
       operationId: getCreatedTours
       tags:
         - Users
+      security:
+        - basicAuth: []
       responses:
         200:
           description: Tour found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Tours"
+                type: array
+                items:
+                  type: number
         400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /user/boughtTours:
+    get:
+      summary: Get my bought tours
+      operationId: getBoughtTours
+      tags:
+        - Users
+      security:
+        - basicAuth: []
+      responses: 
+        200:
+          description: Bought tours
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tour"
+        500:
           description: unexpected error
           content:
             application/json:
@@ -500,10 +551,12 @@ paths:
                 $ref: "#/components/schemas/Error"
   /user/connectWallet:
     post:
-      summary: create a new User
+      summary: Create a new User
       operationId: connectWallet
       tags:
         - Users
+      security:
+        - basicAuth: []
       requestBody:
         description: The user wallet id on the Ethereum chain
         required: true
@@ -610,20 +663,10 @@ components:
         $ref: "#/components/schemas/Tour"
     Rating:
       required:
-        - rid
         - rating
-        - description
-        - timestamp
       properties:
-        rid:
-          type: integer
         rating:
           type: integer
-        description:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
     WalletConnect:
       properties:
         walletAddress:

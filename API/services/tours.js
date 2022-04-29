@@ -434,7 +434,7 @@ module.exports.rateTour = async (options) => {
           );
         } else {
           return {
-            status: 400,
+            status: 404,
             data: 'wrong tid'
           };
         }
@@ -446,7 +446,7 @@ module.exports.rateTour = async (options) => {
     );
   } else {
     return {
-      status: 400,
+      status: 406,
       data: 'int value between 1 and 5 allowed'
     };
   }
