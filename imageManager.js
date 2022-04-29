@@ -9,6 +9,9 @@ const fs = require('fs');
  * @returns the image path
  */
 module.exports.getImagePath = (tID, imageID, mimetype = "") => {
+    if (!Number.isInteger(tID) || !Number.isInteger(imageID)) {
+        return "";
+    }
     // return different path if server is running inside docker
     var prefix = "";
     if (process.env.IN_DOCKER != 1){

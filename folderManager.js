@@ -1,6 +1,9 @@
 const fs = require('fs');
 
 module.exports.getFolderPath = (tID) => {
+    if (!Number.isInteger(tID)) {
+        return "";
+    }
     // return different path if server is running inside docker
     if (process.env.IN_DOCKER == 1){
         return `/data/${tID}`;
