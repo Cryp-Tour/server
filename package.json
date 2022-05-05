@@ -24,6 +24,7 @@
     "express": "^4.13.3",
     "express-basic-auth": "^1.2.0",
     "express-rate-limit": "^6.3.0",
+    "express-session": "^1.17.2",
     "mime-types": "^2.1.35",
     "morgan": "^1.10.0",
     "multer": "^1.4.4",

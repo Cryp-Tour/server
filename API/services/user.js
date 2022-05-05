@@ -199,10 +199,9 @@ module.exports.connectWallet = async (options) => {
  module.exports.getBoughtTours = async (options) => {
   return await dao.get('SELECT t.tid, t.description, t.title, t.duration, t.distance, t.difficulty, t.location, t.creatorID FROM userTours u left join tour t ON t.tid == u.tourID WHERE u.userID == ?', [options.uid]).then(
     async (value) => { 
-      console.log(JSON.stringify(value));
       return {
         status: 200,
-        data: JSON.stringify(value),
+        data: value,
       };
     }, (err) => {
       return {
