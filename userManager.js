@@ -54,3 +54,13 @@ module.exports.getUserId = async (username) => {
 
     return answer[0].uID;
 };
+
+module.exports.getUserIdFromAddress = async (address) => {
+    var users = await dao.get("SELECT uID from user WHERE walletID = ?", address);
+    if (users.length == 0) {
+        console.log(`UserManager: No user with walletID ${address}`);
+        return undefined;
+    }
+
+    return users[0].uID;
+}
