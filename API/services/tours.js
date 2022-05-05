@@ -265,8 +265,7 @@ module.exports.uploadImage = async (options) => {
               folderManager.createFolderIfNotExists(folderPath);
               fs.writeFileSync(filePath, options.file.buffer);
               return {
-                status: 200,
-                data: 'uploadImage ok!'
+                status: 201
               };
             }, (err) => {
               return {
@@ -367,8 +366,7 @@ module.exports.uploadGpx = async (options) => {
               folderManager.createFolderIfNotExists(folderPath);
               fs.writeFileSync(filePath, options.file.buffer);
               return {
-                status: 200,
-                data: 'uploadGPX ok!'
+                status: 201
               };
         } else {
           return {
@@ -436,7 +434,7 @@ module.exports.rateTour = async (options) => {
           );
         } else {
           return {
-            status: 400,
+            status: 404,
             data: 'wrong tid'
           };
         }
@@ -448,7 +446,7 @@ module.exports.rateTour = async (options) => {
     );
   } else {
     return {
-      status: 400,
+      status: 406,
       data: 'int value between 1 and 5 allowed'
     };
   }

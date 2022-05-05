@@ -37,7 +37,7 @@ module.exports.getUser = async (options) => {
         }
       }, (err) => {
         return {
-          status: 401,
+          status: 400,
         };
       });
 };
@@ -76,12 +76,12 @@ module.exports.createUser = async (options) => {
       };
     }, (err) =>{
       return {
-        status: 401,
+        status: 400,
       };
     });
   },(err)=>{
     return {
-      status: 500,
+      status: 400,
     };
   })  
 };
