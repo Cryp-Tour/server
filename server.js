@@ -5,6 +5,7 @@ var morgan = require('morgan');
 const session = require('express-session');
 const rateLimit = require('express-rate-limit')
 const cryptoManager = require("./cryptoManager");
+var cors = require('cors');
 require('dotenv').config()
 
 const random = (length = 8) => {
@@ -43,6 +44,7 @@ cryptoManager.connectBlockchain();
 // ---------------------------------------------------------------------------
 var app = express();
 app.use(bodyParser.json());
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: random(60),
