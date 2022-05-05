@@ -2,11 +2,18 @@ var DBO = require("./db/dbo");
 const dao = new DBO("./db/db/web.sqlite");
 const bcrypt = require ('bcrypt');
 
-module.exports.checkAuthorizationHeader = async (header) => {
+module.exports.checkAuthorizationHeader = async (header, sessionCookie) => {    
     if (!header) {
-        console.log("UserManager: missing Authorization header");
-        return false;
+        if(sessionCookie.loggedIn){
+            console.log("UserManager: valid session cookie")
+            sessionCookie.touch();
+            return sessionCookie.username;
+        } else {
+            console.log("UserManager: missing Authorization header");
+            return false;
+        }
     }
+
     var splittedHash = Buffer.from(header.split("Basic ")[1], "base64").toString().split(":");
     var username = splittedHash[0];
     var password = splittedHash[1];
@@ -31,6 +38,8 @@ module.exports.checkAuthorizationHeader = async (header) => {
                 await dao.run(
                     `DELETE FROM loginAttempts WHERE userID = ? AND timestamp < ?`,
                     [answer[0].uID,Date.now()]);
+                sessionCookie.loggedIn = true;
+                sessionCookie.username = username;
                 return username;
             } else {
                 console.log(`UserManager: Someone tried to authenticate as ${username} but used the wrong password`);
@@ -53,6 +62,16 @@ module.exports.getUserId = async (username) => {
     }
 
     return answer[0].uID;
+};
+
+module.exports.destroySessionCookie = async (sessionCookie) => {
+    sessionCookie.destroy((err)=>{
+        if(err){
+            return false;
+        } else {
+            return true;
+        }
+    });
 };
 
 module.exports.getUserIdFromAddress = async (address) => {

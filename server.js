@@ -2,9 +2,21 @@ var express = require('express');        // critical module for building a Web S
 var bodyParser = require('body-parser'); // helper routines to parse data as JSON in request body
 var DBO = require('./db/dbo'); //module for db requests and db creation
 var morgan = require('morgan');
+const session = require('express-session');
 const rateLimit = require('express-rate-limit')
 const cryptoManager = require("./cryptoManager");
 require('dotenv').config()
+
+const random = (length = 8) => {
+  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let str = '';
+  for (let i = 0; i < length; i++) {
+      str += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  return str;
+
+};
 
 //----------------------------------------------------------------------------
 // connect to db
@@ -32,6 +44,13 @@ cryptoManager.connectBlockchain();
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+    secret: random(60),
+    resave: false,
+    saveUninitialized: false,
+    name: 'SessionID',
+    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
+}));
 // log every request in format:
 // :remote-addr :remote-user :method :url HTTP/:http-version :status :res[content-length] - :response-time ms
 app.use(morgan('short'))

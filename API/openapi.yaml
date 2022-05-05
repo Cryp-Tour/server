@@ -104,6 +104,7 @@ paths:
         - Tours
       security:
         - basicAuth: []
+        - cookieAuth: []
       requestBody:
         description: A description of a Tour
         required: true
@@ -161,6 +162,7 @@ paths:
         - Tours
       security:
         - basicAuth: []
+        - cookieAuth: []
       parameters:
         - name: TID
           in: path
@@ -198,6 +200,7 @@ paths:
         - Tours
       security:
         - basicAuth: []
+        - cookieAuth: []
       parameters:
         - name: TID
           in: path
@@ -275,6 +278,7 @@ paths:
         - Tours
       security:
         - basicAuth: []
+        - cookieAuth: []
       parameters:
         - name: TID
           in: path
@@ -357,6 +361,7 @@ paths:
       operationId: rateTour
       security:
         - basicAuth: []
+        - cookieAuth: []
       parameters:
         - name: TID
           in: path
@@ -432,6 +437,7 @@ paths:
         - Users
       security:
         - basicAuth: []
+        - cookieAuth: []
       responses:
         200:
           description: Successful request
@@ -477,6 +483,7 @@ paths:
         - Users
       security:
         - basicAuth: []
+        - cookieAuth: []
       requestBody:
         description: The user information
         required: true
@@ -511,6 +518,7 @@ paths:
         - Users
       security:
         - basicAuth: []
+        - cookieAuth: []
       responses:
         200:
           description: Tour found
@@ -534,6 +542,7 @@ paths:
         - Users
       security:
         - basicAuth: []
+        - cookieAuth: []
       responses: 
         200:
           description: Bought tours
@@ -557,6 +566,7 @@ paths:
         - Users
       security:
         - basicAuth: []
+        - cookieAuth: []
       requestBody:
         description: The user wallet id on the Ethereum chain
         required: true
@@ -567,6 +577,38 @@ paths:
       responses:
         201:
           description: Wallet successfully connected
+        401:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /user/login:
+    post:
+      summary: Log in user and receive session cookie
+      tags:
+        - Users
+      security:
+        - basicAuth: []
+      responses:
+        200:
+          description: user successfully logged in
+        401:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /user/logout:
+    post:
+      summary: destroy session cookie
+      tags:
+        - Users
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: sessioncookie successfully destroyed
         401:
           description: unexpected error
           content:
@@ -693,3 +735,7 @@ components:
     basicAuth:
       type: http
       scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SessionID
