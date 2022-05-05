@@ -63,6 +63,8 @@ class DBO {
         difficulty INTEGER,
         location varchar(255),
         creatorID INTEGER NOT NULL,
+        tokenAddress varchar(255),
+        bpoolAddress varchar(255),
         FOREIGN KEY(creatorID) REFERENCES user(uID)
         )`;
       return this.run(sql);
