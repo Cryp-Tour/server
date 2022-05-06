@@ -45,6 +45,7 @@ cryptoManager.connectBlockchain();
 var allowedOrigins = ['http://localhost:8080','https://cryptour.dullmer.de'];
 
 var app = express();
+app.set('trust proxy', 1);
 app.use(bodyParser.json());
 app.use(cors({
   origin: function(origin, callback){
