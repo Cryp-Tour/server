@@ -64,7 +64,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     name: 'SessionID',
-    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000} // 1 week
+    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'none', secure: false} // 1 week
 }));
 // log every request in format:
 // :remote-addr :remote-user :method :url HTTP/:http-version :status :res[content-length] - :response-time ms
