@@ -42,7 +42,7 @@ cryptoManager.connectBlockchain();
 //----------------------------------------------------------------------------
 // create a new express based Web Server
 // ---------------------------------------------------------------------------
-var allowedOrigins = ['http://localhost:8080','https://cryptour.dullmer.de/'];
+var allowedOrigins = ['http://localhost:8080','https://cryptour.dullmer.de'];
 
 var app = express();
 app.use(bodyParser.json());
