@@ -63,7 +63,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: random(60),
     resave: false,
-    proxy: true,
     saveUninitialized: false,
     name: 'SessionID',
     cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'none', secure: true} // 1 week

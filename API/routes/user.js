@@ -94,6 +94,7 @@ router.patch('/', async (req, res, next) => {
  */
  router.post('/login', async (req, res, next) => {
   var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  console.log(req.protocol);
   if (!username){
     res.status(401).send({"code:":"401","message":"unexpected error"});
     return;
