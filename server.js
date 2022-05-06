@@ -63,6 +63,7 @@ app.use(session({
     secret: random(60),
     resave: false,
     saveUninitialized: false,
+    sameSite: 'lax',
     name: 'SessionID',
     cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
 }));
