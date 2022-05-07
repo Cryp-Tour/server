@@ -58,14 +58,14 @@ app.use(cors({
       return callback(new Error(msg), false);
     }
     return callback(null, true);
-  },credentials: true}));
+  },credentials: true, allowedHeaders: ['authorization', 'X-Requested-With', 'X-HTTP-Method-Override', 'Content-Type', 'Accept']}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: random(60),
     resave: false,
     saveUninitialized: false,
     name: 'SessionID',
-    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'none', secure: true} // 1 week
+    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'none', secure: true, httpOnly: false} // 1 week
 }));
 // log every request in format:
 // :remote-addr :remote-user :method :url HTTP/:http-version :status :res[content-length] - :response-time ms
