@@ -38,6 +38,10 @@ router.post('/', async (req, res, next) => {
 
   try {
     const result = await user.createUser(options);
+    if(result.status == 201){
+      req.session.loggedIn = true;
+      req.session.username = req.body.username;
+    }
     res.status(result.status || 200).send(result.data);
   } catch (err) {
     next(err);
@@ -94,12 +98,23 @@ router.patch('/', async (req, res, next) => {
  */
  router.post('/login', async (req, res, next) => {
   var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  console.log(req.protocol);
   if (!username){
-    res.status(401).send({"code:":"401","message":"unexpected error"});
+    res.status(401).send({"code:":"401","message":"error"});
     return;
   } else {
     res.status(200).send();
+  }
+});
+
+/**
+ *check if the user is logged in
+ */
+ router.get('/loggedin', async (req, res, next) => {
+  if (req.session.loggedIn){
+    res.status(200).send();
+    return;
+  } else {
+    res.status(401).send({"code:":"401","message":"not logged in"});
   }
 });
 
