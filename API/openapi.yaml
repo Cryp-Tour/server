@@ -615,6 +615,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /user/loggedin:
+    get:
+      summary: check if the user is logged in
+      tags:
+        - Users
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: user logged in
+        401:
+          description: client not logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       
 components:
   schemas:
