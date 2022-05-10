@@ -9,15 +9,15 @@ const router = new express.Router();
  * Get info about myself
  */
 router.get('/', async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
 
   const options = {
     body: req.body,
-    username: username
+    username: userLogin.username
   };
 
   try {
@@ -52,15 +52,15 @@ router.post('/', async (req, res, next) => {
  * edit the information of an existing user
  */
 router.patch('/', async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
 
   const options = {
     body: req.body,
-    username: username
+    username: userLogin.username
   };
 
   try {
@@ -75,14 +75,15 @@ router.patch('/', async (req, res, next) => {
  * Get my created tours
  */
  router.get('/createdTours', async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
+
   const options = {
     body: req.body,
-    username: username
+    username: userLogin.username
   };
 
   try {
@@ -97,9 +98,9 @@ router.patch('/', async (req, res, next) => {
  * user login
  */
  router.post('/login', async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send({"code:":"401","message":"error"});
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   } else {
     res.status(200).send();
@@ -134,14 +135,14 @@ router.patch('/', async (req, res, next) => {
  * Get my created tours
  */
  router.get('/boughtTours', async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
   const options = {
     body: req.body,
-    uid: await userManager.getUserId(username)
+    uid: await userManager.getUserId(userLogin.username)
   };
 
   try {
@@ -156,15 +157,15 @@ router.patch('/', async (req, res, next) => {
  * connect an Ethereum wallet to the user
  */
 router.post('/connectWallet', async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
 
   const options = {
     body: req.body,
-    username: username
+    username: userLogin.username
   };
 
   try {

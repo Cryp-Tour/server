@@ -7,10 +7,14 @@ module.exports.checkAuthorizationHeader = async (header, sessionCookie) => {
         if(sessionCookie.loggedIn){
             console.log("UserManager: valid session cookie")
             sessionCookie.touch();
-            return sessionCookie.username;
+            return {"username" : sessionCookie.username,
+                    "status" : 200,
+                    "message" : "Authentication via cookie"};
         } else {
             console.log("UserManager: missing Authorization header");
-            return false;
+            return {"username" : false,
+                    "status" : 400,
+                    "message" : "Missing Authorization header"};
         }
     }
 
@@ -21,7 +25,9 @@ module.exports.checkAuthorizationHeader = async (header, sessionCookie) => {
     var answer = await Promise.resolve(dao.get(`SELECT pwdHash, uID from user WHERE username = ?`, username));
     if (answer.length == 0) {
         console.log(`UserManager: Invalid user ${username}`);
-        return false;
+        return {"username" : false,
+                "status" : 401,
+                "message" : "Invalid credentials"};
     }
 
     var loginAttempts = await Promise.resolve(dao.get('SELECT COUNT(*) AS count FROM loginAttempts WHERE userID = ? AND timestamp > ?',[answer[0].uID,Date.now()-300000]))
@@ -29,7 +35,9 @@ module.exports.checkAuthorizationHeader = async (header, sessionCookie) => {
         await dao.run(
             `DELETE FROM loginAttempts WHERE userID = ? AND timestamp < ?`,
             [answer[0].uID,Date.now()-300000]);
-        return false;
+        return {"username" : false,
+            "status" : 401,
+            "message" : "User login blocked for this user for 5 minutes."};
     } else {
         var passwordFromDb = answer[0].pwdHash;
         return await bcrypt.compare(password, passwordFromDb).then(async function(result) {
@@ -40,14 +48,18 @@ module.exports.checkAuthorizationHeader = async (header, sessionCookie) => {
                     [answer[0].uID,Date.now()]);
                 sessionCookie.loggedIn = true;
                 sessionCookie.username = username;
-                return username;
+                return {"username" : username,
+                        "status" : 200,
+                        "message" : "User logged in"};
             } else {
                 console.log(`UserManager: Someone tried to authenticate as ${username} but used the wrong password`);
                 await dao.run(
                     `INSERT INTO loginAttempts (userID, timestamp)
                       VALUES (?, ?)`,
                     [answer[0].uID,Date.now()]);
-                return false;
+                return {"username" : false,
+                    "status" : 401,
+                    "message" : "Invalid credentials"};
             }
 
         });
