@@ -37,9 +37,9 @@ router.get('/', async (req, res, next) => {
  * Create a tour
  */
 router.post('/', async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
 
@@ -75,15 +75,15 @@ router.get('/:TID', async (req, res, next) => {
  * Delete a specific tour
  */
 router.delete('/:TID', async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
 
   const options = {
     TID: req.params['TID'],
-    username: username
+    username: userLogin.username
   };
 
   try {
@@ -98,9 +98,9 @@ router.delete('/:TID', async (req, res, next) => {
  * Upload an image file
  */
 router.post('/:TID/image', upload.single('file'), async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
 
@@ -148,15 +148,15 @@ router.get('/:TID/image/:IID', (req, res, next) => {
  * Get a tour gpx file
  */
 router.get('/:TID/gpx', async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
 
   const options = {
     TID: req.params['TID'],
-    username: username
+    username: userLogin.username
   };
 
   try {
@@ -186,9 +186,9 @@ router.get('/:TID/gpx', async (req, res, next) => {
  * Upload a gpx file
  */
 router.post('/:TID/gpx', upload.single('file'), async (req, res, next) => {
-  var username = awaituserManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = awaituserManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
 
@@ -209,16 +209,16 @@ router.post('/:TID/gpx', upload.single('file'), async (req, res, next) => {
  * Rate a tour
  */
 router.post('/:TID/rating', async (req, res, next) => {
-  var username = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
-  if (!username){
-    res.status(401).send("Invalid authorization!");
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
     return;
   }
 
   const options = {
     TID: req.params['TID'],
     body: req.body,
-    uID: await userManager.getUserId(username)
+    uID: await userManager.getUserId(userLogin.username)
   };
 
   try {

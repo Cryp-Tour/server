@@ -48,42 +48,80 @@ module.exports.getUser = async (options) => {
  * @return {Promise}
  */
 module.exports.createUser = async (options) => {
-  return await bcrypt.hash(options.body.password,saltRounds).then(async function(hash){
-    return await dao
-    .run(
-      `INSERT INTO user(firstName,surName,pwdHash,eMail,userName,walletID) VALUES(?,?,?,?,?,?)`,
-      [
-        options.body.firstname,
-        options.body.surname,
-        hash,
-        options.body.email,
-        options.body.username,
-        options.body['wallet-id']
-      ]
-    )
-    .then((value) => {
-      console.log("Creating user with username " + options.body.username);
-      return {
-        status: 201,
-        data: {
-          "id": value.id,
-          "firstname": options.body.firstname,
-          "surname": options.body.surname,
-          "username": options.body.username,
-          "email": options.body.email,
-          "wallet-id": options.body['wallet-id']
-        }
-      };
-    }, (err) =>{
-      return {
-        status: 400,
-      };
-    });
-  },(err)=>{
+  emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+  if (options.body.password.trim() == ""){
     return {
       status: 400,
+      data: "password must be set"
     };
-  })  
+  } else if(options.body.firstname.trim() == ""){
+    return {
+      status: 400,
+      data: "Firstname must be set"
+    };
+  } else if(options.body.surname.trim() == ""){
+    return {
+      status: 400,
+      data: "Surname must be set"
+    };
+  } else if(options.body.username.trim() == ""){
+    return {
+      status: 400,
+      data: "Username must be set"
+    };
+  } else if(!emailRegexp.test(options.body.email)){
+    return {
+      status: 400,
+      data: "invalid email address"
+    };
+  } else {
+    return await bcrypt.hash(options.body.password,saltRounds).then(async function(hash){
+      return await dao
+      .run(
+        `INSERT INTO user(firstName,surName,pwdHash,eMail,userName,walletID) VALUES(?,?,?,?,?,?)`,
+        [
+          options.body.firstname,
+          options.body.surname,
+          hash,
+          options.body.email,
+          options.body.username,
+          options.body['wallet-id']
+        ]
+      )
+      .then((value) => {
+        console.log("Creating user with username " + options.body.username);
+        return {
+          status: 201,
+          data: {
+            "id": value.id,
+            "firstname": options.body.firstname,
+            "surname": options.body.surname,
+            "username": options.body.username,
+            "email": options.body.email,
+            "wallet-id": options.body['wallet-id']
+          }
+        };
+      }, (err) =>{
+        if(err.code == 'SQLITE_CONSTRAINT'){
+          return {
+            status: 400,
+            data: "Username already exists"
+          };
+        } else {
+          return {
+            status: 400,
+            data: "unknown error"
+          };
+        }
+      });
+    },(err)=>{
+      return {
+        status: 400,
+        data: "unknown error"
+      };
+    })  
+  }
 };
 
 /**
