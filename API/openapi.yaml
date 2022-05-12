@@ -258,8 +258,8 @@ paths:
           description: unexpected error when uploading image
         401:
           $ref: "#/components/responses/UnauthorizedError"
-          
-  /tourc/{TID}/image/{IID}:
+
+  /tours/{TID}/image/{IID}:
     get:
       summary: Get a tour image
       operationId: getTourImage

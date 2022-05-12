@@ -305,7 +305,7 @@ module.exports.uploadImage = async (options) => {
  * @return {Promise}
  */
 module.exports.getTourImage = (options) => {
-  var filePath = imageManager.getImagePath(options.TID, options.IID);
+  var filePath = imageManager.getImagePath(parseInt(options.TID), parseInt(options.IID));
 
   if(fs.existsSync(filePath)){
     return new FileResult(filePath);
