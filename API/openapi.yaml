@@ -229,7 +229,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /tourc/{TID}/image/{IID}:
+  /tours/{TID}/image/{IID}:
     get:
       summary: Get a tour image
       operationId: getTourImage
