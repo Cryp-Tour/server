@@ -10,7 +10,11 @@ const proccess = require("process")
  * @param {int} uID the user id
  */
 module.exports.userBoughtTour = async (tID, uID) => {
-    await dao.run('INSERT INTO userTours(tourID, userID) VALUES(?,?)', [tID, uID]);
+    try {
+        await dao.run('INSERT INTO userTours(tourID, userID) VALUES(?,?)', [tID, uID]);
+    } catch (e) {
+        console.log("Error adding user to bought tours in database");
+    }
 }
 
 /**
@@ -44,7 +48,7 @@ module.exports.connectBlockchain = async () => {
         }
 
         crypto_lib.registerCallback("TourTokenOrder", async (event) => {
-            console.log("[CRYPTO]: Someone bought a tour");
+            console.log("[CRYPTO]: Someone bought a tour...", event);
             var tourId = event.serviceId;
             var userAddress = event.payer;
             var uID = await user_manager.getUserIdFromAddress(userAddress);
@@ -52,6 +56,8 @@ module.exports.connectBlockchain = async () => {
                 console.log(`[CRYPTO]: Tour payer with address ${userAddress} does not exist in Database`);
                 return;
             }
+
+            console.log(`[CRYPTO]: User mit uID ${uID} hat die Tour ${event.serviceId} gekauft`);
 
             await this.userBoughtTour(tourId, uID);
         })
