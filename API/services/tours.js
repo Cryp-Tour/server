@@ -211,15 +211,19 @@ module.exports.deleteTour = async (options) => {
   if (getQuery.length == 0) {
     return {
       status: 404,
-      data: "Tour not found"
+      data: {
+        Error: "Tour not found"
+      }
     }
   }
 
   // check if user owns tour
   if (getQuery[0].creatorID != uID) {
     return {
-      status: 401,
-      data: "User does not own tour"
+      status: 403,
+      data: {
+        Error: "User does not own tour"
+      }
     }
   }
 
@@ -229,7 +233,9 @@ module.exports.deleteTour = async (options) => {
     console.log("Tour is already bought and therefore cannot be deleted.");
     return {
       status: 403,
-      data: "Tour is already bought and therefore cannot be deleted."
+      data: {
+        Error: "Tour is already bought and therefore cannot be deleted."
+      }
     }
   }
 
@@ -328,7 +334,7 @@ module.exports.getTourGpx = async (options) => {
     var result = await dao.get("SELECT userID FROM userTours WHERE tourID = ? AND userID = ?", [options.TID, currentUid]);
   } catch {
     return {
-      status: 401,
+      status: 403,
       data: "User not allowed to download gpx file"
     }
   }

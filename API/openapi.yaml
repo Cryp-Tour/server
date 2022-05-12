@@ -92,11 +92,16 @@ paths:
                 type: number
               description: "How many Tours were found"
         400:
-          description: unexpected error
+          description: malformed query input
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: object
+                properties:
+                    Error: 
+                      type: string
+                      example: Expected Number for {Queryparameter}
+
     post:
       summary: Create a tour
       operationId: createTour
@@ -115,12 +120,26 @@ paths:
       responses:
         201:
           description: Tour successfully created
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: 
+                    type: string
+                    example: creating tour with title {title}
         400:
-          description: unexpected error
+          description: tour is not correctly formatted
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: body is not properly formatted! Please reference the YAML
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
   /tours/{TID}:
     get:
       summary: Get a specific tour
@@ -143,17 +162,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/Tour"
         400:
-          description: unexpected error
+          description: no TID Parameter given
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: object
+                properties:
+                  Error: 
+                    type: string
+                    example: Expected Number for TID  
         404:
           description: Tour not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: Could not find tour with id {TID}
 
     delete:
       summary: Delete a specific tour
@@ -175,23 +202,27 @@ paths:
         204:
           description: Tour deleted
         401:
-          description: User does not own tour
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: "#/components/responses/UnauthorizedError"
         403:
-          description: Tour already bought by someone. Unable to delete.
+          description: User does not own tour or tour already bought by someone. Unable to delete.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: Tour is already bought and therefore cannot be deleted
         404:
           description: Tour not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: Could not find Tour
   /tours/{TID}/image:
     post:
       summary: Upload an image file
@@ -224,11 +255,10 @@ paths:
         201:
           description: Image successfully uploaded
         400:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          description: unexpected error when uploading image
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+          
   /tourc/{TID}/image/{IID}:
     get:
       summary: Get a tour image
@@ -263,13 +293,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        400:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                type: string
+                example: Could not find image with ID {IID} for tour with ID {TID}
+
   /tours/{TID}/gpx:
     get:
       summary: Get a tour gpx file
@@ -295,30 +321,22 @@ paths:
               schema:
                 type: string
                 format: binary
-        403:
-          description: Tour not bought by current user
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        400:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         401:
+          $ref: "#/components/responses/UnauthorizedError"
+        403:
           description: user has not bought tour
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: string
+                example: User not allowed to download gpx file
         404:
           description: GPX not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: string
+                example: Could not find GPX Data for Tour with ID {TID}
     post:
       summary: Upload a gpx file
       operationId: uploadGPX
@@ -349,11 +367,9 @@ paths:
         201:
           description: GPX successfully uploaded
         400:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          description: unexpected when uploading gpx file
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
 
   /tours/{TID}/rating:
     post:
@@ -382,16 +398,24 @@ paths:
       responses:
         200:
           description: Rating added or updated
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
         404:
           description: Tour not found
-        406:
-          description: Rating not between 1 and 5
-        500:
-          description: unexpected error
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+              schema: 
+                type: string
+                example: wrong tid
+        406:
+          description: Rating not between 1 and 5
+          content:
+            application/json:
+              schema: 
+                type: string
+                example: int value between 1 and 5 allowed
+        500:
+          description: unexpected error
     get:
       summary: Get a tour rating
       operationId: getTourRating
@@ -422,13 +446,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: no ratings submitted for this tour
         404:
           description: tour not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: string
+                example: "Error: Could not Find Tour with ID {TID}"
   /user:
     get:
       summary: Get info about myself
@@ -447,10 +476,8 @@ paths:
                 $ref: "#/components/schemas/User"
         400:
           description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
     post:
       summary: Create a new User
       operationId: createUser
@@ -471,11 +498,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
         400:
-          description: unexpected error
+          description: user supplied cannot be created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: string
+                example: unknown error
     patch:
       summary: Edit the information of an existing user
       operationId: patchUser
@@ -500,16 +528,10 @@ paths:
                 $ref: "#/components/schemas/User"
         400:
           description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
         500:
           description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
   /user/createdTours:
     get:
       summary: Get my created tours
@@ -530,10 +552,8 @@ paths:
                   type: number
         400:
           description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
   /user/boughtTours:
     get:
       summary: Get my bought tours
@@ -552,12 +572,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Tour"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
         500:
           description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
   /user/connectWallet:
     post:
       summary: Create a new User
@@ -578,11 +596,9 @@ paths:
         201:
           description: Wallet successfully connected
         401:
+          $ref: "#/components/responses/UnauthorizedError"
+        400:
           description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
   /user/login:
     post:
       summary: Log in user and receive session cookie
@@ -594,11 +610,10 @@ paths:
         200:
           description: user successfully logged in
         401:
+          $ref: "#/components/responses/UnauthorizedError"
+        400:
           description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+
   /user/logout:
     post:
       summary: destroy session cookie
@@ -610,11 +625,17 @@ paths:
         200:
           description: sessioncookie successfully destroyed
         401:
-          description: unexpected error
+          description: couldn't destroy session cookie
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: sessioncookie couldn't be destroyed!
+        400:
+          description: unexpected error
   /user/loggedin:
     get:
       summary: check if the user is logged in
@@ -626,12 +647,19 @@ paths:
         200:
           description: user logged in
         401:
-          description: client not logged in
+          description: not logged in
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-      
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: not logged in
+        400:
+          description: client not logged in
+
+
 components:
   schemas:
     User:
@@ -742,11 +770,11 @@ components:
   responses:
     UnauthorizedError:
       description: Authentication information is missing or invalid
-      headers:
-        WWW_Authenticate:
-          schema:
+      content:
+        application/json:
+          schema: 
             type: string
-
+            example: Invalid Credentials
   securitySchemes:
     basicAuth:
       type: http
