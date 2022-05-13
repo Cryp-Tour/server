@@ -658,6 +658,37 @@ paths:
                     example: not logged in
         400:
           description: client not logged in
+  /user/updatePassword:
+    patch:
+      summary: update the user password
+      tags:
+        - Users
+      security:
+        - basicAuth: []
+        - cookieAuth: []
+      responses:
+        201:
+          description: password successfully updated
+        401:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: unexpected error
+        400:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: unexpected error
 
 
 components:

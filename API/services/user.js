@@ -130,18 +130,39 @@ module.exports.createUser = async (options) => {
  * @return {Promise}
  */
 module.exports.patchUser = async (options) => {
-  return await bcrypt.hash(options.body.password,saltRounds).then(async function(hash){
+  emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  if(options.body.firstname.trim() == ""){
+    return {
+      status: 400,
+      data: "Firstname must be set"
+    };
+  } else if(options.body.surname.trim() == ""){
+    return {
+      status: 400,
+      data: "Surname must be set"
+    };
+  } else if(options.body.username.trim() == ""){
+    return {
+      status: 400,
+      data: "Username must be set"
+    };
+  } else if(!emailRegexp.test(options.body.email)){
+    return {
+      status: 400,
+      data: "invalid email address"
+    };
+  } else {
     return await dao
       .get(`SELECT uID from user WHERE username = ?`, [options.username])
       .then(async (value) => {
         if (value.length > 0){
-          return await dao.run(`UPDATE user SET username = ?, firstName = ?, surName = ?, pwdHash = ?, eMail = ? WHERE uID = ?`,
+          return await dao.run(`UPDATE user SET username = ?, firstName = ?, surName = ?, eMail = ?, walletID = ? WHERE uID = ?`,
           [
             options.body.username,
             options.body.firstname,
             options.body.surname,
-            hash,
             options.body.email,
+            options.body['wallet-id'],
             value[0].uID
           ]).then((value) => {
             console.log("Updating user " + options.body.username);
@@ -152,29 +173,35 @@ module.exports.patchUser = async (options) => {
                 "surname": options.body.surname,
                 "username": options.body.username,
                 "email": options.body.email,
+                "walletid": options.body['wallet-id']
               }
             };
           }, (err) => {
-            return {
-              status: 400,
-            };
+            if(err.code == 'SQLITE_CONSTRAINT'){
+              return {
+                status: 400,
+                data: "Username already exists"
+              };
+            } else {
+              return {
+                status: 400,
+                data: "unknown error"
+              };
+            }
           });
         } else {
           return {
             status: 400,
+            data: "unknown error"
           };
         }
       }, (err) => {
         return {
           status: 400,
+          data: "unknown error"
         };
       });
-    }, (err) => {
-      return {
-        status: 500,
-      };
-    }
-  );
+  }
 };
 
 /**
@@ -204,6 +231,52 @@ module.exports.connectWallet = async (options) => {
         status: 401,
       };
     });
+};
+
+/**
+ * @param {Object} options
+ * @throws {Error}
+ * @return {Promise}
+ */
+ module.exports.updatePassword = async (options) => {
+  console.log(options);
+  if (options.body.password.trim() == ""){
+    return {
+      status: 400,
+      data: "password must be set"
+    };
+  } else {
+    return await bcrypt.hash(options.body.password,saltRounds).then(async function(hash){
+      return await dao
+      .run(`UPDATE user SET pwdHash = ? WHERE username = ?`, [
+        hash,
+        options.username,
+      ])
+      .then((value) => {
+        if (value.changes > 0){
+          console.log("Updating password address for user " + options.username);
+          return{
+            status: 201,
+          };
+        } else {
+          return{
+            status: 401,
+            data: "unkwown error"
+          };
+        }
+      }, (err) => {
+        return{
+          status: 401,
+          data: "unkwown error"
+        };
+      });
+    },(err)=>{
+      return {
+        status: 400,
+        data: "unknown error"
+      };
+    })  
+  }
 };
 
 /**

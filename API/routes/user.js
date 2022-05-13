@@ -65,6 +65,9 @@ router.patch('/', async (req, res, next) => {
 
   try {
     const result = await user.patchUser(options);
+    if(result.status == 200){
+      req.session.username = req.body.username;
+    }
     res.status(result.status || 200).send(result.data);
   } catch (err) {
     next(err);
@@ -170,6 +173,29 @@ router.post('/connectWallet', async (req, res, next) => {
 
   try {
     const result = await user.connectWallet(options);
+    res.status(result.status || 200).send(result.data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * update password
+ */
+router.patch('/updatePassword', async (req, res, next) => {
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  if (!userLogin.username){
+    res.status(userLogin.status).send(userLogin.message);
+    return;
+  }
+
+  const options = {
+    body: req.body,
+    username: userLogin.username
+  };
+
+  try {
+    const result = await user.updatePassword(options);
     res.status(result.status || 200).send(result.data);
   } catch (err) {
     next(err);
