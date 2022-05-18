@@ -59,14 +59,14 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: minTime
+        - name: minDuration
           in: query
           description: Search by minimum tour time 
           required: false
           schema:
             type: integer
             format: int32
-        - name: maxTime
+        - name: maxDuration
           in: query
           description: Search by maximum tour time 
           required: false

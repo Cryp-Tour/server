@@ -19,8 +19,8 @@ router.get('/', async (req, res, next) => {
     maxDifficulty: req.query['maxDifficulty'],
     minDistance: req.query['minDistance'],
     maxDistance: req.query['maxDistance'],
-    minTime: req.query['minTime'],
-    maxTime: req.query['maxTime'],
+    minDuration: req.query['minDuration'],
+    maxDuration: req.query['maxDuration'],
     location: req.query['location']
   };
 
