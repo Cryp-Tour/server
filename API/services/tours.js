@@ -339,7 +339,7 @@ module.exports.getTourGpx = async (options) => {
     }
   }
 
-  var filePath = gpxManager.getTourGpxPath(options.TID);
+  var filePath = gpxManager.getTourGpxPath(parseInt(options.TID));
   if(fs.existsSync(filePath)){
     return new FileResult(filePath);
   }
