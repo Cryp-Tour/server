@@ -292,7 +292,15 @@ module.exports.connectWallet = async (options) => {
         console.log("Getting created tours for user " + options.username);
         await dao.get(`SELECT * FROM tour WHERE creatorID = ?`, [value[0].uID]).then(async (value) => {
           returnData = value
-        })
+        }).then(async () => { 
+          if (returnData.length > 0) {
+            for (i = 0; i < returnData.length; i++) {
+              await dao.get(`SELECT tiID from tourImage WHERE tourID = ?`, [returnData[i]["tID"]]).then((value) => {
+                returnData[i].tourImages = value
+              })
+            }
+          }
+        });
       }
     });
 
