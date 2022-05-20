@@ -458,6 +458,28 @@ paths:
               schema:
                 type: string
                 example: "Error: Could not Find Tour with ID {TID}"
+  /tours/{TID}/creator:
+    get:
+      summary: Get the creator username of this tour
+      operationId: getCreatorName
+      tags:
+        - Tours
+      responses:
+        200:
+          description: Successful request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: user1
+        404:
+          description: tour not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Error: Could not Find Tour with ID {TID}"
+      
   /user:
     get:
       summary: Get info about myself

@@ -246,4 +246,21 @@ router.get('/:TID/rating', async (req, res, next) => {
   }
 });
 
+/**
+ * Get the tour creator
+ */
+ router.get('/:TID/creator', async (req, res, next) => {
+  const options = {
+    TID: req.params['TID']
+  };
+
+  try {
+    const result = await tours.getTourCreator(options);
+    res.header(result.header);
+    res.status(result.status || 200).send(result.data);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

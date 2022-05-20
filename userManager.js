@@ -76,6 +76,16 @@ module.exports.getUserId = async (username) => {
     return answer[0].uID;
 };
 
+module.exports.getUsername = async (uID) => {
+    var answer = await Promise.resolve(dao.get(`SELECT userName from user WHERE uID = ?`, uID));
+    if (answer.length == 0) {
+        console.log(`UserManager: Invalid userid ${username}`);
+        return undefined;
+    }
+
+    return answer[0].userName;
+}
+
 module.exports.destroySessionCookie = async (sessionCookie) => {
     sessionCookie.destroy((err)=>{
         if(err){
