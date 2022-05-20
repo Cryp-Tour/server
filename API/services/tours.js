@@ -534,3 +534,25 @@ module.exports.getTourRating = async (options) => {
 
 };
 
+/**
+ * @param {Object} options
+ * @param {Integer} options.TID The ID of the tour to retrieve
+ * @throws {Error}
+ * @return {Promise}
+ */
+module.exports.getTourCreator = async (options) => {
+  var tour = await dao.get("SELECT creatorID from tour WHERE tID = ?", [options.TID]);
+  if (tour.length == 0) {
+    return {
+      status: 404,
+      data: "Tour not found"
+    }
+  }
+  
+  var username = await userManager.getUsername(tour[0].creatorID);
+  return {
+    status: 200,
+    data: username
+  }
+}
+
