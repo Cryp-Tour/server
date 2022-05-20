@@ -332,7 +332,15 @@ module.exports.getTourGpx = async (options) => {
   var currentUid = await userManager.getUserId(options.username);
   try {
     var result = await dao.get("SELECT userID FROM userTours WHERE tourID = ? AND userID = ?", [options.TID, currentUid]);
-  } catch {
+  } catch (error) {
+    console.log("Error checking if user bought tour", error);
+    return {
+      status: 500,
+      data: "Internal Server Error checkig if user bought tour"
+    }
+  }
+
+  if (result.length == 0) {
     return {
       status: 403,
       data: "User not allowed to download gpx file"
