@@ -11,6 +11,7 @@ const dao = new DBO("./db/db/web.sqlite");
 const fs = require('fs');
 const userManager = require("../../userManager");
 const { disable } = require('express/lib/application');
+const res = require('express/lib/response');
 
 /**
  * @param {Object} options
@@ -340,7 +341,19 @@ module.exports.getTourGpx = async (options) => {
     }
   }
 
-  if (result.length == 0) {
+  var allowDownload = false;
+
+  if (result.length != 0) {
+    allowDownload = true;
+  } else {
+    var tour = await dao.get("SELECT creatorID from tour WHERE tID = ?", [options.TID]);
+    if (tour.length == 1 && tour[0].creatorID == currentUid) {
+      // user created tour, allow download
+      allowDownload = true;
+    }
+  }
+
+  if (!allowDownload) {
     return {
       status: 403,
       data: "User not allowed to download gpx file"
