@@ -118,16 +118,17 @@ paths:
             schema: 
               $ref: "#/components/schemas/TourCreate"
       responses:
-        201:
+        200:
           description: Tour successfully created
           content: 
             application/json:
               schema:
                 type: object
                 properties:
-                  data: 
-                    type: string
-                    example: creating tour with title {title}
+                  tID: 
+                    type: number
+                    example: 5
+                    description: resulting tour id
         400:
           description: tour is not correctly formatted
           content:

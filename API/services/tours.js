@@ -122,7 +122,7 @@ module.exports.createTour = async (options) => {
 		}
 	}
 
-  await dao
+  var insert_result = await dao
     .run(
       `INSERT INTO tour(title,difficulty,distance,duration,description,location,creatorID) VALUES(?,?,?,?,?,?,?)`,
       [
@@ -134,15 +134,16 @@ module.exports.createTour = async (options) => {
         options.body.location,
         options.body.creatorID,
       ]
-    ).then(
-      function(){
-        console.log("Creating tour with title: " + options.body.title);
-      });
+    );
+
+    console.log("Created tour with id", insert_result.id);
 
 
   return {
-    status: 201,
-    data: 'Created tour with title: ' + options.body.title
+    status: 200,
+    data: {
+      tID: insert_result.id
+    }
 
   };
 };
