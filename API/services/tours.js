@@ -58,6 +58,9 @@ module.exports.listTours = async (options) => {
 			if(options.location != undefined){
 				sqlQuery += (" location =  '" + options.location + "' AND");
 			}
+      if(options.searchQuery != undefined){
+        sqlQuery += (" title LIKE '%" + options.searchQuery + "%' AND");
+      }
 			sqlQuery = sqlQuery.substring(0, sqlQuery.length-3);
 		}
 	} catch (e){
@@ -69,9 +72,6 @@ module.exports.listTours = async (options) => {
 			}
 		}
 	}
-
-
-  console.log(options)
 
   
   var returnData = [];
