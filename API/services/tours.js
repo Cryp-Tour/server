@@ -385,6 +385,7 @@ module.exports.uploadGpx = async (options) => {
   const mimetypes = ["application/gpx+xml"];
 
   if (mimetypes.includes(options.file.mimetype)){
+
     //check if tour exist
     return await dao.get("SELECT COUNT(*) as count FROM tour WHERE tid = ? and creatorID = ?", [options.TID,options.uID]).then(
       async (value) => {
@@ -397,17 +398,20 @@ module.exports.uploadGpx = async (options) => {
                 status: 201
               };
         } else {
+          console.log("No tour found");
           return {
             status: 400
           };
         }
       }, (err) => {
+        console.log("Error db query");
         return {
           status: 400
         };
       }
     );
   } else {
+    console.log("Wrong mimetype:"+options.file.mimetype);
     return {
       status: 400,
     }
