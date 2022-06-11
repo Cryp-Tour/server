@@ -106,7 +106,8 @@ router.post('/:TID/image', upload.single('file'), async (req, res, next) => {
 
   const options = {
     file: req.file,
-    TID: req.params['TID']
+    TID: req.params['TID'],
+    uID: await userManager.getUserId(userLogin.username)
   };
 
   try {
@@ -186,7 +187,7 @@ router.get('/:TID/gpx', async (req, res, next) => {
  * Upload a gpx file
  */
 router.post('/:TID/gpx', upload.single('file'), async (req, res, next) => {
-  var userLogin = awaituserManager.checkAuthorizationHeader(req.headers.authorization, req.session);
+  var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);
   if (!userLogin.username){
     res.status(userLogin.status).send(userLogin.message);
     return;
@@ -194,7 +195,8 @@ router.post('/:TID/gpx', upload.single('file'), async (req, res, next) => {
 
   const options = {
     file: req.file,
-    TID: req.params['TID']
+    TID: req.params['TID'],
+    uID: await userManager.getUserId(userLogin.username)
   };
 
   try {

@@ -263,7 +263,7 @@ module.exports.uploadImage = async (options) => {
 
   if (mimetypes.includes(options.file.mimetype)){
     //check if tour exist
-    return await dao.get("SELECT COUNT(*) as count FROM tour WHERE tid = ?", [options.TID]).then(
+    return await dao.get("SELECT COUNT(*) as count FROM tour WHERE tid = ? and creatorID = ?", [options.TID,options.uID]).then(
       async (value) => {
         if(value[0].count > 0){
           return await dao.run("INSERT INTO tourImage(tourID) VALUES (?)", [options.TID]).then(
@@ -386,11 +386,11 @@ module.exports.uploadGpx = async (options) => {
 
   if (mimetypes.includes(options.file.mimetype)){
     //check if tour exist
-    return await dao.get("SELECT COUNT(*) as count FROM tour WHERE tid = ?", [options.TID]).then(
+    return await dao.get("SELECT COUNT(*) as count FROM tour WHERE tid = ? and creatorID = ?", [options.TID,options.uID]).then(
       async (value) => {
         if(value[0].count > 0){
-              let filePath = gpxManager.getTourGpxPath(options.TID);
-              let folderPath = folderManager.getFolderPath(options.TID);
+              let filePath = gpxManager.getTourGpxPath(parseInt(options.TID));
+              let folderPath = folderManager.getFolderPath(parseInt(options.TID));
               folderManager.createFolderIfNotExists(folderPath);
               fs.writeFileSync(filePath, options.file.buffer);
               return {
