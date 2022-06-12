@@ -268,8 +268,8 @@ module.exports.uploadImage = async (options) => {
         if(value[0].count > 0){
           return await dao.run("INSERT INTO tourImage(tourID) VALUES (?)", [options.TID]).then(
             (value) => {
-              let filePath = imageManager.getImagePath(options.TID, value.id, options.file.mimetype);
-              let folderPath = folderManager.getFolderPath(options.TID);
+              let filePath = imageManager.getImagePath(parseInt(options.TID), parseInt(value.id), options.file.mimetype);
+              let folderPath = folderManager.getFolderPath(parseInt(options.TID));
               folderManager.createFolderIfNotExists(folderPath);
               fs.writeFileSync(filePath, options.file.buffer);
               return {
