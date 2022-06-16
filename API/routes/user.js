@@ -135,7 +135,7 @@ router.patch('/', async (req, res, next) => {
 });
 
 /**
- * Get my created tours
+ * Get my bought tours
  */
  router.get('/boughtTours', async (req, res, next) => {
   var userLogin = await userManager.checkAuthorizationHeader(req.headers.authorization, req.session);

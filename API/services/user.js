@@ -318,6 +318,13 @@ module.exports.connectWallet = async (options) => {
  module.exports.getBoughtTours = async (options) => {
   return await dao.get('SELECT t.tid, t.description, t.title, t.duration, t.distance, t.difficulty, t.location, t.creatorID FROM userTours u left join tour t ON t.tid == u.tourID WHERE u.userID == ?', [options.uid]).then(
     async (value) => { 
+      if (value.length > 0) {
+        for (i = 0; i < value.length; i++) {
+          await dao.get(`SELECT tiID from tourImage WHERE tourID = ?`, [value[i]["tID"]]).then((valueImage) => {
+            value[i].tourImages = valueImage
+          })
+        }
+      }
       return {
         status: 200,
         data: value,
