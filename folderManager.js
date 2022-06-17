@@ -16,3 +16,7 @@ module.exports.createFolderIfNotExists = (path) => {
         fs.mkdirSync(path);
     }
 };
+
+module.exports.deleteFolder = (path) => {
+    fs.rmdirSync(path, { recursive: true });
+}

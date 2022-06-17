@@ -247,6 +247,13 @@ module.exports.deleteTour = async (options) => {
     `DELETE FROM tour WHERE tID = ?`, [options.TID]
   );
 
+  try{
+  let folderPath = folderManager.getFolderPath(parseInt(options.TID));
+  folderManager.deleteFolder(folderPath);
+  } catch {
+
+  }
+
   return {
     status: 204
   }
