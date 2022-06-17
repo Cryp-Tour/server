@@ -246,6 +246,12 @@ module.exports.deleteTour = async (options) => {
   await dao.run(
     `DELETE FROM tour WHERE tID = ?`, [options.TID]
   );
+  await dao.run(
+    `DELETE FROM tourImage WHERE tourID = ?`, [options.TID]
+  );
+  await dao.run(
+    `DELETE FROM rating WHERE tourID = ?`, [options.TID]
+  );
 
   try{
   let folderPath = folderManager.getFolderPath(parseInt(options.TID));
