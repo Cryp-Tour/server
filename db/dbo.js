@@ -21,7 +21,6 @@ class DBO {
       .then(() => this.#createTableUserTours())
       .then(() => this.#createTableTourImage())
       .then(() => this.#createTableRating())
-      .then(() => this.#createTableRatingImage())
       .catch((err) => {
         console.log('Error: ')
         console.log(JSON.stringify(err))});
@@ -103,16 +102,6 @@ class DBO {
         tourID INTEGER NOT NULL,
         FOREIGN KEY(tourID) REFERENCES tour(tID),
         FOREIGN KEY(ownerID) REFERENCES user(uID)
-        )`;
-      return this.run(sql);
-    }
-
-    #createTableRatingImage(){
-      const sql = `
-      CREATE TABLE IF NOT EXISTS ratingImage(
-        riID INTEGER NOT NULL PRIMARY KEY,
-        ratingID INTEGER NOT NULL,
-        FOREIGN KEY(ratingID) REFERENCES rating(rID)
         )`;
       return this.run(sql);
     }
