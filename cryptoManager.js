@@ -32,8 +32,11 @@ module.exports.walletToUser = async (walledId) => {
 
 module.exports.connectBlockchain = async () => {
     try {
-        crypto_lib.setProviderURL(proccess.env.CHAIN_PROVIDER_URL);
-        crypto_lib.setNetworkId(proccess.env.CHAIN_NETWORK_ID);
+        var chain = proccess.env.CHAIN_PROVIDER_URL;
+        var network_id = proccess.env.CHAIN_NETWORK_ID;
+        console.log(`[CRYPTO]: Connecting to Chain at ${chain} with network id ${network_id}`)
+        crypto_lib.setProviderURL(chain);
+        crypto_lib.setNetworkId(network_id);
 
         // TODO: add contract files after deploying to correct blockchain
         crypto_lib.initTourTokenFactoryListener(__dirname + "/contracts/TourTokenFactory.json");
