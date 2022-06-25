@@ -66,30 +66,41 @@ module.exports.connectBlockchain = async () => {
         })
 
         crypto_lib.registerCallback("TourTokenFactory", async (event) => {
-            console.log("[CRYPTO]: Someone created a new TourToken");
-
-            // den neuen Token auch mit Überwachen
-            crypto_lib.addTT(__dirname + '/contracts/TourTokenTemplate.json', event.tokenAddress)
-
-            var address = event.tokenAddress;
-            var tourID = event.tokenName.split("Cryptour-ID:")[1];
-            await dao.run("UPDATE tour SET tokenAddress = ? WHERE tID = ?", [address, tourID]);
+            try {
+                console.log("[CRYPTO]: Someone created a new TourToken");
+    
+                // den neuen Token auch mit Überwachen
+                crypto_lib.addTT(__dirname + '/contracts/TourTokenTemplate.json', event.tokenAddress)
+    
+                var address = event.tokenAddress;
+                var tourID = event.tokenName.split("Cryptour-ID:")[1];
+                await dao.run("UPDATE tour SET tokenAddress = ? WHERE tID = ?", [address, tourID]);
+            } catch (error) {
+                console.error("[CRYPTO-ERROR]:", e)
+            }
         })
 
         crypto_lib.registerCallback("BFactory", (event) => {
-            console.log(`[CRYPTO]: Balancer Pool created at address ${event.pool}`);
-
-            // jemand hat einen balancer pool erstellt. Den jetzt überwachen
-            crypto_lib.addBPool(__dirname + '/contracts/BPool.json', event.pool)
+            try {
+                console.log(`[CRYPTO]: Balancer Pool created at address ${event.pool}`);
+    
+                // jemand hat einen balancer pool erstellt. Den jetzt überwachen
+                crypto_lib.addBPool(__dirname + '/contracts/BPool.json', event.pool)
+            } catch (error) {
+                console.error("[CRYPTO-ERROR]:", e)
+            }
         })
         
         crypto_lib.registerCallback("BPool", async (event) => {
-            console.log(`[CRYPTO]: Balancer Pool finalisiert`);
-            var poolAddress = event.pool;
-            // token 0 ist immer der Tausch-Token, also z.B. der
-            var tokenAddress = event.tokens[1];
-            await dao.run("UPDATE tour SET bpoolAddress = ? WHERE tokenAddress = ?", [poolAddress, tokenAddress]);
-            console.log(event)
+            try {
+                console.log(`[CRYPTO]: Balancer Pool finalisiert`);
+                var poolAddress = event.pool;
+                // token 0 ist immer der Tausch-Token, also z.B. der Tour Token
+                var tokenAddress = event.tokens[1];
+                await dao.run("UPDATE tour SET bpoolAddress = ? WHERE tokenAddress = ?", [poolAddress, tokenAddress]);
+            } catch (error) {
+                console.error("[CRYPTO-ERROR]:", e)
+            }
         })
     } catch (e) {
         console.log("Error connecting blockchain:", e);
