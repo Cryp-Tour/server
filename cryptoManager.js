@@ -50,6 +50,7 @@ module.exports.connectBlockchain = async () => {
             crypto_lib.addTT(__dirname + '/contracts/TourTokenTemplate.json', tokenAddress);
         }
 
+        console.log("[CRYPTO]: Register TourTokenOrder callback...");
         crypto_lib.registerCallback("TourTokenOrder", async (event) => {
             console.log("[CRYPTO]: Someone bought a tour...", event);
             var tourId = event.serviceId;
@@ -65,6 +66,8 @@ module.exports.connectBlockchain = async () => {
             await this.userBoughtTour(tourId, uID);
         })
 
+
+        console.log("[CRYPTO]: Register TourTokenFactory callback...");
         crypto_lib.registerCallback("TourTokenFactory", async (event) => {
             try {
                 console.log("[CRYPTO]: Someone created a new TourToken");
@@ -80,6 +83,7 @@ module.exports.connectBlockchain = async () => {
             }
         })
 
+        console.log("[CRYPTO]: Register BFactory callback...");
         crypto_lib.registerCallback("BFactory", (event) => {
             try {
                 console.log(`[CRYPTO]: Balancer Pool created at address ${event.pool}`);
@@ -91,6 +95,7 @@ module.exports.connectBlockchain = async () => {
             }
         })
         
+        console.log("[CRYPTO]: Register BPool callback...");
         crypto_lib.registerCallback("BPool", async (event) => {
             try {
                 console.log(`[CRYPTO]: Balancer Pool finalisiert`);
