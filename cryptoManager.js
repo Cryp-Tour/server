@@ -47,6 +47,7 @@ module.exports.connectBlockchain = async () => {
         for (i = 0; i < tours.length; i++) {
             var tokenAddress = tours[i].tokenAddress;
             if (tokenAddress == undefined || tokenAddress == "") continue;
+            console.log("[CRYPTO]: Startup - watch existing tour token at " + tokenAddress);
             crypto_lib.addTT(__dirname + '/contracts/TourTokenTemplate.json', tokenAddress);
         }
 
